@@ -43,8 +43,8 @@ public class KeyboardBlockLeft extends PeripheralBlock {
     
     private static final Property<?>[] properties = new Property<?>[] {TYPE, FACING};
 
-    public KeyboardBlockLeft() {
-        super(DefaultPeripheral.KEYBOARD);
+    public KeyboardBlockLeft(BlockBehaviour.Properties properties) {
+        super(DefaultPeripheral.KEYBOARD, properties);
     }
     
     // TODO: make non static (for extensibility purposes)

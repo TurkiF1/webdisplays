@@ -38,9 +38,8 @@ import static net.montoyo.wd.block.PeripheralBlock.point;
 public class KeyboardBlockRight extends Block implements IPeripheral {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-    public KeyboardBlockRight() {
-        super(Properties.ofFullCopy(Blocks.STONE)
-                .strength(1.5f, 10.f));
+    public KeyboardBlockRight(Properties properties) {
+        super(properties.strength(1.5f, 10.f));
     }
     
     private static void removeLeftPiece(BlockState state, Level world, BlockPos pos) {

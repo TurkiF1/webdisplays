@@ -42,8 +42,8 @@ import org.jetbrains.annotations.Nullable;
 public class PeripheralBlock extends WDContainerBlock {
     DefaultPeripheral type;
 
-    public PeripheralBlock(DefaultPeripheral type) {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).strength(1.5f, 10.f));
+    public PeripheralBlock(DefaultPeripheral type, BlockBehaviour.Properties properties) {
+        super(properties.strength(1.5f, 10.f));
         this.type = type;
     }
 
