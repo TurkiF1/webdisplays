@@ -32,7 +32,7 @@ jobs:
           unzip -p "$MOD_JAR" webdisplays.mixins.json > packaged-mixins.json
           ! grep -Eq '"(MouseHandlerMixin|OverlayMixin)"' packaged-mixins.json
           ! rg -U '@SubscribeEvent\s+public\s+static' src/main/java
-          rg -U 'if \(world\.isClientSide\(\)\)\s*return InteractionResult\.SUCCESS' src/main/java/net/montoyo/wd/block/ScreenBlock.java
+          grep -A1 -F 'if (world.isClientSide())' src/main/java/net/montoyo/wd/block/ScreenBlock.java | grep -Fq 'return InteractionResult.SUCCESS'
       - name: Smoke-test NeoForge server startup
         run: |
           mkdir -p run-server
