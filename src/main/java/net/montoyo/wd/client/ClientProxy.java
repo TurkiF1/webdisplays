@@ -242,6 +242,11 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	/**************************************** INHERITED METHODS ****************************************/
 	public static void onClientSetup(FMLClientSetupEvent event) {
 		BlockEntityRenderers.register(TileRegistry.SCREEN_BLOCK_ENTITY.get(), new ScreenRenderer.ScreenRendererProvider());
+		event.enqueueWork(() -> {
+			WebDisplays.PROXY.preInit();
+			WebDisplays.PROXY.init();
+			WebDisplays.PROXY.postInit();
+		});
 	}
 	
 	@Override

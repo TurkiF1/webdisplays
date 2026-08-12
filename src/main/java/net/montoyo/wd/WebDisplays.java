@@ -139,14 +139,16 @@ public class WebDisplays {
         ItemRegistry.init(bus);
         TileRegistry.init(bus);
         
-        PROXY.preInit();
-        
         NeoForge.EVENT_BUS.register(this);
 
-        //Other things
-        PROXY.init();
-
-        PROXY.postInit();
+        // Client setup happens after Minecraft has created its client instance.
+        // Running the client proxy here makes Minecraft.getInstance() null during
+        // modern NeoForge's parallel mod construction.
+        if (!FMLEnvironment.getDist().isClient()) {
+            PROXY.preInit();
+            PROXY.init();
+            PROXY.postInit();
+        }
         hasOC = ModList.get().isLoaded("opencomputers");
         hasCC = ModList.get().isLoaded("computercraft");
 
