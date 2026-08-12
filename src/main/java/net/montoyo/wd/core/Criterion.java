@@ -4,70 +4,39 @@
 
 package net.montoyo.wd.core;
 
-import com.google.gson.JsonObject;
-import net.minecraft.advancements.CriterionTrigger;
-import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
-import net.minecraft.advancements.critereon.ContextAwarePredicate;
-import net.minecraft.advancements.critereon.DeserializationContext;
-import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.PlayerAdvancements;
-import org.jetbrains.annotations.NotNull;
+import com.mojang.serialization.Codec;
+import net.minecraft.advancements.criterion.ContextAwarePredicate;
+import net.minecraft.advancements.criterion.SimpleCriterionTrigger;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Optional;
 
-public class Criterion implements CriterionTrigger<Criterion.Instance> {
-    public static class Instance extends AbstractCriterionTriggerInstance {
-        public Instance(ResourceLocation id, ContextAwarePredicate arg2) {
-            super(id, arg2);
-        }
+public class Criterion extends SimpleCriterionTrigger<Criterion.Instance> {
+    public record Instance(Optional<ContextAwarePredicate> player) implements SimpleInstance {
+        public static final Codec<Instance> CODEC = ContextAwarePredicate.CODEC
+                .optionalFieldOf("player")
+                .xmap(Instance::new, Instance::player)
+                .codec();
     }
 
-    private final ResourceLocation id;
-    private final HashMap<PlayerAdvancements, ArrayList<Listener<Instance>>> map = new HashMap<>();
+    private final Identifier id;
 
     public Criterion(@Nonnull String name) {
-        id = new ResourceLocation("webdisplays", name);
+        id = new Identifier("webdisplays", name);
     }
 
-    @Override
-    @Nonnull
-    public ResourceLocation getId() {
+    public Identifier id() {
         return id;
     }
 
     @Override
-    public void addPlayerListener(PlayerAdvancements adv, Listener<Instance> l) {
-        map.computeIfAbsent(adv, k -> new ArrayList<>()).add(l);
+    public Codec<Instance> codec() {
+        return Instance.CODEC;
     }
 
-    @Override
-    public void removePlayerListener(PlayerAdvancements adv, Listener<Instance> l) {
-        map.computeIfPresent(adv, (k, v) -> {
-            v.remove(l);
-            return v.isEmpty() ? null : v;
-        });
-    }
-
-    @Override
-    public void removePlayerListeners(PlayerAdvancements adv) {
-        map.remove(adv);
-    }
-
-    @Override
-    public @NotNull Instance createInstance(JsonObject json, DeserializationContext context) {
-        return new Instance(id, EntityPredicate.fromJson(json, "instance", context));
-    }
-
-    public void trigger(PlayerAdvancements ply) {
-        ArrayList<Listener<Instance>> listeners = map.get(ply);
-
-        if (listeners != null) {
-            Listener[] copy = listeners.toArray(new Listener[0]); //We need to make a copy, otherwise we get a ConcurrentModificationException
-            Arrays.stream(copy).forEach(l -> l.run(ply));
-        }
+    public void trigger(ServerPlayer player) {
+        trigger(player, instance -> true);
     }
 }

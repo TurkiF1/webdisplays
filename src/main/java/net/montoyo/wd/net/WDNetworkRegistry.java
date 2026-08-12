@@ -1,21 +1,19 @@
 package net.montoyo.wd.net;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraft.resources.Identifier;
+import net.minecraftforge.network.ChannelBuilder;
+import net.minecraftforge.network.SimpleChannel;
 import net.montoyo.wd.net.client_bound.*;
 import net.montoyo.wd.net.server_bound.*;
 
 import java.util.ArrayList;
 
 public class WDNetworkRegistry {
-	public static final String networkingVersion = "2";
-	public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-			new ResourceLocation("webdisplays", "packetsystem"),
-			() -> networkingVersion,
-			(s) -> s.equals(networkingVersion),
-			(s) -> s.equals(networkingVersion)
-	);
+	public static final int networkingVersion = 2;
+	public static final SimpleChannel INSTANCE = ChannelBuilder
+			.named(new Identifier("webdisplays", "packetsystem"))
+			.networkProtocolVersion(networkingVersion)
+			.simpleChannel();
 	
 	public static void sendToNearExcept() {
 	
@@ -58,6 +56,7 @@ public class WDNetworkRegistry {
 		entries.add(new NetworkEntry<>(C2SMessageMinepadUrl.class, C2SMessageMinepadUrl::new));
 		
 		for (int i = 0; i < entries.size(); i++) entries.get(i).register(i, INSTANCE);
+		INSTANCE.build();
 	}
 	
 	public static void init() {

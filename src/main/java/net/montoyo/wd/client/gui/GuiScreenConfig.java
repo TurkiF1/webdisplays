@@ -9,7 +9,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.gui.controls.*;
@@ -136,7 +136,7 @@ public class GuiScreenConfig extends WDScreen {
     @Override
     public void init() {
         super.init();
-        loadFrom(new ResourceLocation("webdisplays", "gui/screencfg.json"));
+        loadFrom(new Identifier("webdisplays", "gui/screencfg.json"));
 
         friendBoxes = new CheckBox[] { boxFResolution, boxFUpgrades, boxFOthers, boxFFriends, boxFClick, boxFSetUrl };
         boxFResolution.setUserdata(ScreenRights.MODIFY_SCREEN);

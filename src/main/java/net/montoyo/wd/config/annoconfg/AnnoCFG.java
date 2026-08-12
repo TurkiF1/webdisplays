@@ -1,7 +1,7 @@
 package net.montoyo.wd.config.annoconfg;
 
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
@@ -28,7 +28,7 @@ public class AnnoCFG {
 	private static final ArrayList<AnnoCFG> configs = new ArrayList<>();
 	private final Method postInit;
 	
-	public AnnoCFG(IEventBus bus, Class<?> clazz) {
+	public AnnoCFG(BusGroup bus, Class<?> clazz) {
 		bus.addListener(this::onConfigChange);
 		ForgeConfigSpec.Builder configBuilder = new ForgeConfigSpec.Builder();
 		setup("", configBuilder, clazz);

@@ -12,7 +12,7 @@ import net.montoyo.wd.config.annoconfg.annotation.value.IntRange;
 @Config(type = ModConfig.Type.CLIENT)
 public class ClientConfig {
 	@SuppressWarnings("unused")
-	private static final AnnoCFG CFG = new AnnoCFG(FMLJavaModLoadingContext.get().getModEventBus(), ClientConfig.class);
+	private static final AnnoCFG CFG = new AnnoCFG(FMLJavaModLoadingContext.get().getModBusGroup(), ClientConfig.class);
 	public static void init() {
 		// loads the class
 	}

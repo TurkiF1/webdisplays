@@ -7,7 +7,6 @@ package net.montoyo.wd.client;
 import com.cinemamod.mcef.MCEF;
 import com.cinemamod.mcef.MCEFBrowser;
 import com.mojang.authlib.GameProfile;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.advancements.Advancement;
@@ -25,7 +24,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -46,18 +45,17 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.SharedProxy;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.ScreenBlock;
@@ -134,9 +132,9 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 			return;
 		
 		if (!LaserPointerRenderer.isOn()) {
-			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+			RenderSystem.defaultBlendFunc();
 
-			poseStack.blit(new ResourceLocation(
+			poseStack.blit(new Identifier(
 					"webdisplays:textures/gui/cursors.png"
 			), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, 240, 240, 15, 15, 256, 256);
 			ci.cancel();
@@ -150,9 +148,9 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		BlockPos bpos = result.getBlockPos();
 		
 		if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockRegistry.SCREEN_BLOCk.get()) {
-			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+			RenderSystem.defaultBlendFunc();
 
-			poseStack.blit(new ResourceLocation(
+			poseStack.blit(new Identifier(
 					"webdisplays:textures/gui/cursors.png"
 			), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, 240, 240, 15, 15, 256, 256);
 			ci.cancel();
@@ -176,9 +174,9 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		// for some reason, the cursor gets offset at this value
 		if (sc.mouseType >= CefCursorType.NOT_ALLOWED.ordinal()) coordX -= 15;
 		
-		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		RenderSystem.defaultBlendFunc();
 
-		poseStack.blit(new ResourceLocation(
+		poseStack.blit(new Identifier(
 				"webdisplays:textures/gui/cursors.png"
 		), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, coordX, coordY, 15, 15, 256, 256);
 
@@ -259,16 +257,13 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		BlockEntityRenderers.register(TileRegistry.SCREEN_BLOCK_ENTITY.get(), new ScreenRenderer.ScreenRendererProvider());
 	}
 	
-	@SubscribeEvent
-	public static void onModelRegistryEvent(ModelEvent.RegisterGeometryLoaders event) {
-		event.register(ScreenModelLoader.SCREEN_LOADER.getPath(), new ScreenModelLoader());
-	}
-	
 	@Override
 	public void preInit() {
 		super.preInit();
 		mc = Minecraft.getInstance();
 		MinecraftForge.EVENT_BUS.register(this);
+		TickEvent.LevelTickEvent.Post.BUS.addListener(this::onLevelTick);
+		TickEvent.ClientTickEvent.Post.BUS.addListener(this::onTick);
 	}
 	
 	@Override
@@ -394,7 +389,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	
 	@Override
 	@Nonnull
-	public HasAdvancement hasClientPlayerAdvancement(@Nonnull ResourceLocation rl) {
+	public HasAdvancement hasClientPlayerAdvancement(@Nonnull Identifier rl) {
 		if (advancementToProgressField != null && mc.player != null && mc.player.connection != null) {
 			ClientAdvancements cam = mc.player.connection.getAdvancements();
 			Advancement adv = cam.getAdvancements().get(rl);
@@ -566,10 +561,8 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 
 	/**************************************** EVENT METHODS ****************************************/
 
-	@SubscribeEvent
-	public void onLevelTick(TickEvent.LevelTickEvent ev) {
-		if (!ev.side.equals(LogicalSide.CLIENT)) return;
-		if (ev.phase != TickEvent.Phase.END) return;
+	public void onLevelTick(TickEvent.LevelTickEvent.Post ev) {
+		if (!ev.side().equals(LogicalSide.CLIENT)) return;
 		
 		//Unload/load screens depending on client player distance
 		if (mc.player == null || screenTracking.isEmpty())
@@ -579,7 +572,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		
 		ScreenBlockEntity tes = screenTracking.get(id);
 		
-		if (!tes.getLevel().equals(ev.level))
+		if (!tes.getLevel().equals(ev.level()))
 			return;
 		
 		lastTracked++;
@@ -615,9 +608,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		}
 	}
 	
-	@SubscribeEvent
-	public void onTick(TickEvent.ClientTickEvent ev) {
-		if (ev.phase != TickEvent.Phase.END) return;
+	public void onTick(TickEvent.ClientTickEvent.Post ev) {
 		
 		//Help
 		if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_F1)) {
@@ -726,7 +717,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	public void onWorldUnload(LevelEvent.Unload ev) {
 		Log.info("World unloaded; killing screens...");
 		if (ev.getLevel() instanceof Level level) {
-			ResourceLocation dim = level.dimension().location();
+			Identifier dim = level.dimension().location();
 			for (int i = screenTracking.size() - 1; i >= 0; i--) {
 				if (screenTracking.get(i).getLevel().dimension().location().equals(dim)) //Could be world == ev.getWorld()
 					screenTracking.remove(i).unload();
@@ -821,7 +812,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	}
 	
 	@Override
-	public BlockGetter getWorld(NetworkEvent.Context context) {
+	public BlockGetter getWorld(CustomPayloadEvent.Context context) {
 		BlockGetter senderLevel = super.getWorld(context);
 		if (senderLevel == null) return Minecraft.getInstance().level;
 		return senderLevel;

@@ -4,7 +4,6 @@
 
 package net.montoyo.wd.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
@@ -15,7 +14,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.montoyo.wd.WebDisplays;
@@ -46,8 +45,8 @@ import static net.montoyo.wd.client.gui.GuiMinePad.getChar;
 
 public class GuiServer extends WDScreen {
 	
-	private static final ResourceLocation BG_IMAGE = new ResourceLocation("webdisplays", "textures/gui/server_bg.png");
-	private static final ResourceLocation FG_IMAGE = new ResourceLocation("webdisplays", "textures/gui/server_fg.png");
+	private static final Identifier BG_IMAGE = new Identifier("webdisplays", "textures/gui/server_bg.png");
+	private static final Identifier FG_IMAGE = new Identifier("webdisplays", "textures/gui/server_fg.png");
 	private static final HashMap<String, Method> COMMAND_MAP = new HashMap<>();
 	private static final int MAX_LINE_LEN = 32;
 	private static final int MAX_LINES = 12;
@@ -136,7 +135,7 @@ public class GuiServer extends WDScreen {
 
 //        RenderSystem.enableTexture();
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShaderTexture(0, FG_IMAGE);
 		RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 //        blit(graphics,(width - 256) / 2, (height - 176) / 2, 0, 0, 256, 176);

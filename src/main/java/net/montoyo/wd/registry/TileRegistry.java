@@ -1,7 +1,7 @@
 package net.montoyo.wd.registry;
 
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -28,7 +28,7 @@ public class TileRegistry {
     public static final RegistryObject<BlockEntityType<?>> SERVER = TILE_TYPES.register("server",
             () -> BlockEntityType.Builder.of(ServerBlockEntity::new, BlockRegistry.SERVER_BLOCK.get()).build(null));
 
-    public static void init(IEventBus bus) {
+    public static void init(BusGroup bus) {
         TILE_TYPES.register(bus);
     }
 }

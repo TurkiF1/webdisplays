@@ -7,10 +7,11 @@ package net.montoyo.wd;
 import com.google.gson.Gson;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -24,12 +25,13 @@ import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.bus.BusGroup;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -67,10 +69,10 @@ public class WebDisplays {
 
     public static SharedProxy PROXY = null;
     
-    public static final ResourceLocation ADV_PAD_BREAK = new ResourceLocation("webdisplays", "webdisplays/pad_break");
+    public static final Identifier ADV_PAD_BREAK = new Identifier("webdisplays", "webdisplays/pad_break");
     public static final String BLACKLIST_URL = "mod://webdisplays/blacklisted.html";
     public static final Gson GSON = new Gson();
-    public static final ResourceLocation CAPABILITY = new ResourceLocation("webdisplays", "customdatacap");
+    public static final Identifier CAPABILITY = new Identifier("webdisplays", "customdatacap");
 
     //Sounds
     public SoundEvent soundTyping;
@@ -113,10 +115,10 @@ public class WebDisplays {
     
         if (FMLEnvironment.dist.isClient()) {
             // proxies are annoying, so from now on, I'mma be just registering stuff in here
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientProxy::onKeybindRegistry);
+            FMLJavaModLoadingContext.get().getModBusGroup().addListener(ClientProxy::onKeybindRegistry);
             MinecraftForge.EVENT_BUS.addListener(ClientProxy::onDrawSelection);
             MinecraftForge.EVENT_BUS.addListener(KeyboardCamera::updateCamera);
-            MinecraftForge.EVENT_BUS.addListener(KeyboardCamera::gameTick);
+            TickEvent.ClientTickEvent.Post.BUS.addListener(KeyboardCamera::gameTick);
             ClientConfig.init();
         }
         
@@ -129,7 +131,7 @@ public class WebDisplays {
         criterionKeyboardCat = new Criterion("keyboard_cat");
         registerTrigger(criterionPadBreak, criterionUpgradeScreen, criterionLinkPeripheral, criterionKeyboardCat);
 
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        BusGroup bus = FMLJavaModLoadingContext.get().getModBusGroup();
         WDNetworkRegistry.init();
         SOUNDS.register(bus);
         onRegisterSounds();
@@ -165,9 +167,9 @@ public class WebDisplays {
     }
 
     @SubscribeEvent
-    public static void onAttachPlayerCap(AttachCapabilitiesEvent<Entity> event) {
+    public static void onAttachPlayerCap(AttachCapabilitiesEvent.Entities event) {
         if (event.getObject() instanceof Player && !event.getObject().getCapability(WDDCapability.Provider.cap).isPresent()) {
-            event.addCapability(new ResourceLocation("webdisplays", "wddcapability"), new WDDCapability.Provider());
+            event.addCapability(new Identifier("webdisplays", "wddcapability"), new WDDCapability.Provider());
         }
     }
 
@@ -307,12 +309,12 @@ public class WebDisplays {
             }
 
             PacketDistributor.PacketTarget packetDistrutor = PacketDistributor.PLAYER.with(
-                    () -> (ServerPlayer) ev.getEntity()
+                    (ServerPlayer) ev.getEntity()
             );
 
             S2CMessageServerInfo message = new S2CMessageServerInfo(miniservPort);
 
-            WDNetworkRegistry.INSTANCE.send(packetDistrutor, message);
+            WDNetworkRegistry.INSTANCE.send(message, packetDistrutor);
         }
     }
 
@@ -323,7 +325,7 @@ public class WebDisplays {
     }
 
     @SubscribeEvent
-    public void attachEntityCaps(AttachCapabilitiesEvent<Entity> ev) {
+    public void attachEntityCaps(AttachCapabilitiesEvent.Entities ev) {
         if(ev.getObject() instanceof Player)
             ev.addCapability(CAPABILITY, new WDDCapability.Provider());
     }
@@ -369,7 +371,7 @@ public class WebDisplays {
             PROXY.renderRecipes();
     }
 
-    private boolean hasPlayerAdvancement(ServerPlayer ply, ResourceLocation rl) {
+    private boolean hasPlayerAdvancement(ServerPlayer ply, Identifier rl) {
         MinecraftServer server = PROXY.getServer();
         if(server == null)
             return false;
@@ -385,7 +387,7 @@ public class WebDisplays {
     public static DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, "webdisplays");
 
     private static SoundEvent registerSound(String resName) {
-        ResourceLocation resLoc = new ResourceLocation("webdisplays", resName);
+        Identifier resLoc = new Identifier("webdisplays", resName);
         SoundEvent ret = SoundEvent.createVariableRangeEvent(resLoc);
 
         SOUNDS.register(resName, () -> ret);
@@ -394,7 +396,7 @@ public class WebDisplays {
 
     private static void registerTrigger(Criterion ... criteria) {
         for(Criterion c: criteria)
-            CriteriaTriggers.register(c);
+            Registry.register(BuiltInRegistries.TRIGGER_TYPES, c.id(), c);
     }
 
    // public static boolean isOpenComputersAvailable() {
@@ -420,4 +422,3 @@ public class WebDisplays {
         return isSiteBlacklisted(url) ? BLACKLIST_URL : url;
     }
 }
-

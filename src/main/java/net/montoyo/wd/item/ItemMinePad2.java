@@ -10,7 +10,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -45,7 +44,7 @@ public class ItemMinePad2 extends Item implements WDItem {
 
     @Override
     @Nonnull
-    public InteractionResultHolder<ItemStack> use(Level world, Player ply, @Nonnull InteractionHand hand) {
+    public InteractionResult use(Level world, Player ply, @Nonnull InteractionHand hand) {
         ItemStack is = ply.getItemInHand(hand);
         boolean ok;
 
@@ -68,7 +67,7 @@ public class ItemMinePad2 extends Item implements WDItem {
             ok = true;
         }
 
-        return new InteractionResultHolder<>(ok ? InteractionResult.SUCCESS : InteractionResult.PASS, is);
+        return ok ? InteractionResult.SUCCESS.heldItemTransformedTo(is) : InteractionResult.PASS;
     }
 
 
@@ -99,7 +98,7 @@ public class ItemMinePad2 extends Item implements WDItem {
 
                     Player ply = ent.level().getPlayerByUUID(thrower);
                     if (ply != null && ply instanceof ServerPlayer)
-                        WebDisplays.INSTANCE.criterionPadBreak.trigger(((ServerPlayer) ply).getAdvancements());
+                        WebDisplays.INSTANCE.criterionPadBreak.trigger((ServerPlayer) ply);
                 }
             }
         }

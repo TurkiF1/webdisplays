@@ -11,14 +11,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
 
 public class CheckBox extends BasicControl {
 
-    private static final ResourceLocation texUnchecked = new ResourceLocation("webdisplays", "textures/gui/checkbox.png");
-    private static final ResourceLocation texChecked = new ResourceLocation("webdisplays", "textures/gui/checkbox_checked.png");
+    private static final Identifier texUnchecked = new Identifier("webdisplays", "textures/gui/checkbox.png");
+    private static final Identifier texChecked = new Identifier("webdisplays", "textures/gui/checkbox_checked.png");
     public static final int WIDTH = 16;
     public static final int HEIGHT = 16;
 

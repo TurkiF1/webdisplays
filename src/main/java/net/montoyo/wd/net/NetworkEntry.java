@@ -1,7 +1,7 @@
 package net.montoyo.wd.net;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.SimpleChannel;
 
 import java.util.function.Function;
 
@@ -15,11 +15,10 @@ public class NetworkEntry<T extends Packet> {
 	}
 	
 	public void register(int indx, SimpleChannel channel) {
-		channel.registerMessage(
-				indx, clazz,
-				Packet::write,
-				fabricator,
-				(pkt, ctx) -> pkt.handle(ctx.get())
-		);
+		channel.messageBuilder(clazz, indx)
+				.encoder(Packet::write)
+				.decoder(fabricator)
+				.consumerMainThread(Packet::handle)
+				.add();
 	}
 }

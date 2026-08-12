@@ -8,7 +8,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.ScreenBlockEntity;
@@ -96,7 +96,7 @@ public class S2CMessageAddScreen extends Packet {
 		}
 	}
 	
-	public void handle(NetworkEvent.Context ctx) {
+	public void handle(CustomPayloadEvent.Context ctx) {
 		if (checkClient(ctx)) {
 			ctx.enqueueWork(() -> {
 				Level lvl = (Level) WebDisplays.PROXY.getWorld(ctx);

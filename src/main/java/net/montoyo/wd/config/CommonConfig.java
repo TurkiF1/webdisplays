@@ -13,7 +13,7 @@ import net.montoyo.wd.config.annoconfg.annotation.value.LongRange;
 @Config(type = ModConfig.Type.COMMON)
 public class CommonConfig {
 	@SuppressWarnings("unused")
-	private static final AnnoCFG CFG = new AnnoCFG(FMLJavaModLoadingContext.get().getModEventBus(), CommonConfig.class);
+	private static final AnnoCFG CFG = new AnnoCFG(FMLJavaModLoadingContext.get().getModBusGroup(), CommonConfig.class);
 
 	public static void init() {
 		// loads the class

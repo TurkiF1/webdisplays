@@ -7,7 +7,7 @@ package net.montoyo.wd.client.gui.controls;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.item.ItemStack;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;

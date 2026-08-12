@@ -10,14 +10,13 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.gui.camera.KeyboardCamera;
@@ -40,11 +39,8 @@ import org.cef.misc.CefCursorType;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
-import org.vivecraft.client_vr.gameplay.VRPlayer;
-import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
 
 import java.io.*;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -83,30 +79,6 @@ public class GuiKeyboard extends WDScreen {
         vars.put("showWarning", showWarning ? 1.0 : 0.0);
     }
 
-    private static final boolean vivecraftPresent;
-
-    static {
-        boolean vivePres = false;
-        if (ModList.get().isLoaded("vivecraft")) vivePres = true;
-        // I believe the non-mixin version of vivecraft is not a proper mod, so
-        // detect the mod reflectively if the mod is not found
-        else {
-            try {
-                Class<?> clazz = Class.forName("org.vivecraft.gameplay.screenhandlers.KeyboardHandler");
-                //noinspection ConstantConditions
-                if (clazz == null) vivePres = false;
-                else {
-                    Method m = clazz.getMethod("setOverlayShowing", boolean.class);
-                    //noinspection ConstantConditions
-                    vivePres = m != null;
-                }
-            } catch (Throwable ignored) {
-                vivePres = false;
-            }
-        }
-        vivecraftPresent = vivePres;
-    }
-
     @Override
     public void init() {
         super.init();
@@ -116,7 +88,7 @@ public class GuiKeyboard extends WDScreen {
         else
             showWarning = !hasUserReadWarning();
 
-        loadFrom(new ResourceLocation("webdisplays", "gui/kb_right.json"));
+        loadFrom(new Identifier("webdisplays", "gui/kb_right.json"));
 
         if (showWarning) {
             int maxLabelW = 0;
@@ -153,10 +125,6 @@ public class GuiKeyboard extends WDScreen {
         defaultBackground = showWarning;
         syncTicks = 5;
 
-        if (vivecraftPresent)
-            if (VRPlayer.get() != null)
-                KeyboardHandler.setOverlayShowing(true);
-
         KeyboardCamera.focus(tes, side);
 
         data = tes.getScreen(side);
@@ -171,9 +139,6 @@ public class GuiKeyboard extends WDScreen {
     @Override
     public void removed() {
         super.removed();
-        if (vivecraftPresent)
-            if (VRPlayer.get() != null)
-                KeyboardHandler.setOverlayShowing(false);
         KeyboardCamera.focus(null, null);
         CefBrowser browser = data.browser;
         if (browser instanceof MCEFBrowser mcef) {

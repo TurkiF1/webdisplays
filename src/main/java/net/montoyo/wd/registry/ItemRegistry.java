@@ -2,7 +2,7 @@ package net.montoyo.wd.registry;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -15,7 +15,7 @@ import java.util.Locale;
 
 @SuppressWarnings({"unchecked", "unused"})
 public class ItemRegistry {
-    public static void init(IEventBus bus) {
+    public static void init(BusGroup bus) {
         ITEMS.register(bus);
     }
 

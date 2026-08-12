@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -45,7 +45,7 @@ public class RenderRecipe extends Screen {
 
     }
 
-    private static final ResourceLocation CRAFTING_TABLE_GUI_TEXTURES = new ResourceLocation("textures/gui/container/crafting_table.png");
+    private static final Identifier CRAFTING_TABLE_GUI_TEXTURES = new Identifier("textures/gui/container/crafting_table.png");
     private static final int SIZE_X = 176;
     private static final int SIZE_Y = 166;
     private int x;
@@ -65,7 +65,7 @@ public class RenderRecipe extends Screen {
         renderItem = minecraft.getItemRenderer();
 
         for(Recipe recipe : minecraft.level.getRecipeManager().getRecipes()) {
-            ResourceLocation regName = recipe.getId();
+            Identifier regName = recipe.getId();
 
             if(regName != null && regName.getNamespace().equals("webdisplays")) {
                 if(recipe instanceof ShapedRecipe)
