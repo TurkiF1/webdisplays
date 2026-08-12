@@ -55,6 +55,11 @@ tasks.withType(JavaCompile).configureEach {
     options.release = 21
 }
 
+// The legacy utility source under src/test is not a JUnit test suite.
+tasks.named('test') {
+    failOnNoDiscoveredTests = false
+}
+
 jar {
     manifest {
         attributes([
