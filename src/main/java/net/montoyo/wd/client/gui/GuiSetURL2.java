@@ -84,7 +84,7 @@ public class GuiSetURL2 extends WDScreen {
 		else
 			tfURL.setText(screenURL);
 
-		tfURL.focusAndSelectAll();
+		tfURL.focus();
 	}
 	
 	@Override

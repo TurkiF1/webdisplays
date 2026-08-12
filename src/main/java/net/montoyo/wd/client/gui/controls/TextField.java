@@ -333,13 +333,6 @@ public class TextField extends Control {
         field.setFocused(true);
     }
 
-    /** Focus this field and select its complete value so typing replaces it. */
-    public void focusAndSelectAll() {
-        field.setFocused(true);
-        field.setCursorPosition(field.getValue().length());
-        field.setHighlightPos(0);
-    }
-
     public void setTextColor(int color) {
         field.setTextColor(color);
         textColor = color;
