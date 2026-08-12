@@ -245,14 +245,12 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		event.enqueueWork(() -> {
 			WebDisplays.PROXY.preInit();
 			WebDisplays.PROXY.init();
-			WebDisplays.PROXY.postInit();
 		});
 	}
 	
 	@Override
 	public void preInit() {
 		super.preInit();
-		mc = Minecraft.getInstance();
 		NeoForge.EVENT_BUS.register(this);
 		NeoForge.EVENT_BUS.addListener(this::onLevelTick);
 		NeoForge.EVENT_BUS.addListener(this::onTick);
@@ -519,6 +517,8 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	/**************************************** EVENT METHODS ****************************************/
 
 	public void onLevelTick(LevelTickEvent.Post ev) {
+		if (mc == null) mc = Minecraft.getInstance();
+		if (mc == null) return;
 		if (!ev.getLevel().isClientSide()) return;
 		
 		//Unload/load screens depending on client player distance
@@ -566,6 +566,8 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	}
 	
 	public void onTick(ClientTickEvent.Post ev) {
+		if (mc == null) mc = Minecraft.getInstance();
+		if (mc == null) return;
 		
 		//Help
 		if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_F1)) {
