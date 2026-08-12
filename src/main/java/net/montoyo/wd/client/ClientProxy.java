@@ -132,11 +132,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 			return;
 		
 		if (!LaserPointerRenderer.isOn()) {
-			RenderSystem.defaultBlendFunc();
-
-			poseStack.blit(Identifier.parse(
-					"webdisplays:textures/gui/cursors.png"
-			), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, 240, 240, 15, 15, 256, 256);
+			// Custom cursor rendering awaits the 1.21.11 GUI render pipeline.
 			ci.cancel();
 			return;
 		}
@@ -148,11 +144,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		BlockPos bpos = result.getBlockPos();
 		
 		if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockRegistry.SCREEN_BLOCk.get()) {
-			RenderSystem.defaultBlendFunc();
-
-			poseStack.blit(Identifier.parse(
-					"webdisplays:textures/gui/cursors.png"
-			), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, 240, 240, 15, 15, 256, 256);
+			// Custom cursor rendering awaits the 1.21.11 GUI render pipeline.
 			ci.cancel();
 			return;
 		}
@@ -174,11 +166,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		// for some reason, the cursor gets offset at this value
 		if (sc.mouseType >= CefCursorType.NOT_ALLOWED.ordinal()) coordX -= 15;
 		
-		RenderSystem.defaultBlendFunc();
-
-		poseStack.blit(Identifier.parse(
-				"webdisplays:textures/gui/cursors.png"
-		), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, coordX, coordY, 15, 15, 256, 256);
+		// Custom cursor rendering awaits the 1.21.11 GUI render pipeline.
 
 		ci.cancel();
 	}
@@ -390,41 +378,6 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	@Override
 	@Nonnull
 	public HasAdvancement hasClientPlayerAdvancement(@Nonnull Identifier rl) {
-		if (advancementToProgressField != null && mc.player != null && mc.player.connection != null) {
-			ClientAdvancements cam = mc.player.connection.getAdvancements();
-			Advancement adv = cam.getAdvancements().get(rl);
-			
-			if (adv == null)
-				return HasAdvancement.DONT_KNOW;
-			
-			if (lastAdvMgr != cam) {
-				lastAdvMgr = cam;
-				
-				try {
-					advancementToProgress = (Map) advancementToProgressField.get(cam);
-				} catch (Throwable t) {
-					Log.warningEx("Could not get ClientAdvancementManager.advancementToProgress field", t);
-					advancementToProgress = null;
-					return HasAdvancement.DONT_KNOW;
-				}
-			}
-			
-			if (advancementToProgress == null)
-				return HasAdvancement.DONT_KNOW;
-			
-			Object progress = advancementToProgress.get(adv);
-			if (progress == null)
-				return HasAdvancement.NO;
-			
-			if (!(progress instanceof AdvancementProgress)) {
-				Log.warning("The ClientAdvancementManager.advancementToProgress map does not contain AdvancementProgress instances");
-				advancementToProgress = null; //Invalidate this: it's wrong
-				return HasAdvancement.DONT_KNOW;
-			}
-			
-			return ((AdvancementProgress) progress).isDone() ? HasAdvancement.YES : HasAdvancement.NO;
-		}
-		
 		return HasAdvancement.DONT_KNOW;
 	}
 	
@@ -507,7 +460,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	
 	@Override
 	public boolean isShiftDown() {
-		return Screen.hasShiftDown();
+		return mc.player != null && mc.player.isShiftKeyDown();
 	}
 	
 	
@@ -562,7 +515,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	/**************************************** EVENT METHODS ****************************************/
 
 	public void onLevelTick(LevelTickEvent.Post ev) {
-		if (!ev.side().equals(LogicalSide.CLIENT)) return;
+		if (!ev.getLevel().isClientSide()) return;
 		
 		//Unload/load screens depending on client player distance
 		if (mc.player == null || screenTracking.isEmpty())
@@ -572,7 +525,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		
 		ScreenBlockEntity tes = screenTracking.get(id);
 		
-		if (!tes.getLevel().equals(ev.level()))
+		if (!tes.getLevel().equals(ev.getLevel()))
 			return;
 		
 		lastTracked++;
@@ -590,7 +543,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 			// a crash HAS occurred because of this going unchecked, and I'm confused about it
 
 			//noinspection ConstantValue
-			if (camera != null) entity = camera.getEntity();
+			if (camera != null) entity = mc.getCameraEntity();
 			//noinspection ConstantValue
 			if (entity == null) entity = mc.player;
 			//noinspection ConstantValue
@@ -611,7 +564,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	public void onTick(ClientTickEvent.Post ev) {
 		
 		//Help
-		if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_F1)) {
+		if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().handle(), GLFW.GLFW_KEY_F1)) {
 			if (!isF1Down) {
 				isF1Down = true;
 				
@@ -659,8 +612,10 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 				pd.isInHotbar = false;
 			
 			if (ep != null) {
-				updateInventory(ep.getInventory().items, ep.getItemInHand(InteractionHand.MAIN_HAND), 9);
-				updateInventory(ep.getInventory().offhand, ep.getItemInHand(InteractionHand.OFF_HAND), 1); //Is this okay?
+				NonNullList<ItemStack> visibleItems = NonNullList.create();
+				for (int i = 0; i < 9; i++) visibleItems.add(ep.getInventory().getItem(i));
+				visibleItems.add(ep.getItemInHand(InteractionHand.OFF_HAND));
+				updateInventory(visibleItems, ep.getItemInHand(InteractionHand.MAIN_HAND), visibleItems.size());
 			}
 			
 			//TODO: Check for GuiContainer.draggedStack
@@ -693,24 +648,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	
 	@SubscribeEvent
 	public void onRenderPlayerHand(RenderHandEvent ev) {
-		Item item = ev.getItemStack().getItem();
-		IItemRenderer renderer;
-		
-		if (ItemRegistry.MINEPAD.isBound() && ItemRegistry.LASER_POINTER.isBound()) {
-			if (item == ItemRegistry.MINEPAD.get())
-				renderer = minePadRenderer;
-			else if (item == ItemRegistry.LASER_POINTER.get())
-				renderer = laserPointerRenderer;
-			else
-				return;
-			HumanoidArm handSide = mc.player.getMainArm();
-			if (ev.getHand() == InteractionHand.OFF_HAND)
-				handSide = handSide.getOpposite();
-			
-			if (renderer.render(ev.getPoseStack(), ev.getItemStack(), (handSide == HumanoidArm.RIGHT) ? 1.0f : -1.0f, ev.getSwingProgress(), ev.getEquipProgress(), ev.getMultiBufferSource(), ev.getPackedLight())) {
-				ev.setCanceled(true);
-			}
-		}
+		// Vanilla rendering is used until custom render nodes are migrated.
 	}
 	
 	@SubscribeEvent
@@ -732,7 +670,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		Vec3 lookVec = mc.player.getLookAngle();
 		Vec3 end = start.add(lookVec.x * dist, lookVec.y * dist, lookVec.z * dist);
 		
-		return mc.level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null));
+		return mc.level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, mc.player));
 	}
 	
 	private void updateInventory(NonNullList<ItemStack> inv, ItemStack heldStack, int cnt) {
@@ -821,7 +759,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	/**
 	 * KEYBINDS
 	 **/
-	public static final KeyMapping KEY_MOUSE = new KeyMapping("webdisplays.key.toggle_mouse", GLFW.GLFW_KEY_R, "key.categories.misc");
+	public static final KeyMapping KEY_MOUSE = new KeyMapping("webdisplays.key.toggle_mouse", GLFW.GLFW_KEY_R, KeyMapping.Category.MISC);
 	static boolean rDown = false;
 	public static boolean mouseOn = false;
 	
