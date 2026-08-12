@@ -4,7 +4,6 @@
 
 package net.montoyo.wd.client.gui.controls;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -104,7 +103,7 @@ public class ControlGroup extends Container {
             RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, 1.f);
 //            RenderSystem.disableTexture();
             RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            RenderSystem.defaultBlendFunc();
 
             double x1 = x;
             double y1 = y;

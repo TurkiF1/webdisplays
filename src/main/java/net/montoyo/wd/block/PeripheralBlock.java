@@ -4,6 +4,7 @@
 
 package net.montoyo.wd.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -41,8 +42,13 @@ public class PeripheralBlock extends WDContainerBlock {
     DefaultPeripheral type;
 
     public PeripheralBlock(DefaultPeripheral type) {
-        super(BlockBehaviour.Properties.copy(Blocks.STONE).strength(1.5f, 10.f));
+        super(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).strength(1.5f, 10.f));
         this.type = type;
+    }
+
+    @Override
+    protected MapCodec<? extends WDContainerBlock> codec() {
+        return MapCodec.unit(this);
     }
 
     @Nullable

@@ -10,8 +10,7 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -65,10 +64,8 @@ public final class MinePadRenderer implements IItemRenderer {
 		
 		boolean sideHold = renderAtSide(handSideSign);
 		
-		//Render arm
-		stack.pushPose();
-		renderArmFirstPerson(stack, multiBufferSource, packedLight, equipProgress, handSideSign);
-		stack.popPose();
+		// The player arm API changed in 1.21.11. Let vanilla render the hand while
+		// this renderer focuses on the MinePad and its browser surface.
 //		if (!sideHold && handSideSign == 1 && mc.player.getItemInHand(InteractionHand.OFF_HAND).isEmpty()) {
 //			stack.pushPose();
 //			renderArmFirstPerson(stack, multiBufferSource, packedLight, 0, -handSideSign);
@@ -102,7 +99,7 @@ public final class MinePadRenderer implements IItemRenderer {
 		stack.translate(-0.063f, -0.28f, -0.001f);
 		
 		// force draw so the browser can be drawn ontop of the model
-		multiBufferSource.getBuffer(RenderType.LINES);
+		multiBufferSource.getBuffer(RenderType.lines());
 		
 		if (is.getTag() != null && is.getTag().contains("PadID")) {
 			ClientProxy.PadData pd = clientProxy.getPadByID(is.getTag().getUUID("PadID"));
@@ -138,27 +135,4 @@ public final class MinePadRenderer implements IItemRenderer {
 		return true;
 	}
 	
-	private void renderArmFirstPerson(PoseStack stack, MultiBufferSource buffer, int combinedLight, float equipProgress, float handSideSign) {
-		float tx = -0.3f * sinSqrtSwingProg1;
-		float ty = 0.4f * sinSqrtSwingProg2;
-		float tz = -0.4f * sinSwingProg1;
-		
-		stack.translate(handSideSign * (tx + 0.64000005f), ty - 0.6f - equipProgress * 0.6f, tz - 0.71999997f);
-		stack.mulPose(YP.rotationDegrees(handSideSign * 45.0f));
-		stack.mulPose(YP.rotationDegrees(handSideSign * sinSqrtSwingProg1 * 70.0f));
-		stack.mulPose(ZP.rotationDegrees(handSideSign * sinSwingProg2 * -20.0f));
-		stack.translate(-handSideSign, 3.6f, 3.5f);
-		stack.mulPose(ZP.rotationDegrees(handSideSign * 120.0f));
-		stack.mulPose(XP.rotationDegrees(200.0f));
-		stack.mulPose(YP.rotationDegrees(handSideSign * -135.0f));
-		stack.translate(handSideSign * 5.6f, 0.0f, 0.0f);
-		
-		PlayerRenderer playerRenderer = (PlayerRenderer) mc.getEntityRenderDispatcher().getRenderer(mc.player);
-		RenderSystem.setShaderTexture(0, mc.player.getSkinTextureLocation());
-		
-		if (handSideSign >= 0.0f)
-			playerRenderer.renderRightHand(stack, buffer, combinedLight, mc.player);
-		else
-			playerRenderer.renderLeftHand(stack, buffer, combinedLight, mc.player);
-	}
 }

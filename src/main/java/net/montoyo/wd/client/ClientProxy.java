@@ -7,7 +7,6 @@ package net.montoyo.wd.client;
 import com.cinemamod.mcef.MCEF;
 import com.cinemamod.mcef.MCEFBrowser;
 import com.mojang.authlib.GameProfile;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.advancements.Advancement;
@@ -46,7 +45,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderHighlightEvent;
@@ -134,7 +132,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 			return;
 		
 		if (!LaserPointerRenderer.isOn()) {
-			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+			RenderSystem.defaultBlendFunc();
 
 			poseStack.blit(new Identifier(
 					"webdisplays:textures/gui/cursors.png"
@@ -150,7 +148,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		BlockPos bpos = result.getBlockPos();
 		
 		if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockRegistry.SCREEN_BLOCk.get()) {
-			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+			RenderSystem.defaultBlendFunc();
 
 			poseStack.blit(new Identifier(
 					"webdisplays:textures/gui/cursors.png"
@@ -176,7 +174,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		// for some reason, the cursor gets offset at this value
 		if (sc.mouseType >= CefCursorType.NOT_ALLOWED.ordinal()) coordX -= 15;
 		
-		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		RenderSystem.defaultBlendFunc();
 
 		poseStack.blit(new Identifier(
 				"webdisplays:textures/gui/cursors.png"
@@ -257,11 +255,6 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	@SubscribeEvent
 	public static void onClientSetup(FMLClientSetupEvent event) {
 		BlockEntityRenderers.register(TileRegistry.SCREEN_BLOCK_ENTITY.get(), new ScreenRenderer.ScreenRendererProvider());
-	}
-	
-	@SubscribeEvent
-	public static void onModelRegistryEvent(ModelEvent.RegisterGeometryLoaders event) {
-		event.register(ScreenModelLoader.SCREEN_LOADER.getPath(), new ScreenModelLoader());
 	}
 	
 	@Override

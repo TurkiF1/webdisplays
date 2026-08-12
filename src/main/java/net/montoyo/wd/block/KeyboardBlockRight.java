@@ -5,6 +5,7 @@
 package net.montoyo.wd.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -16,7 +17,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -36,10 +37,10 @@ import static net.montoyo.wd.block.PeripheralBlock.point;
 
 // TODO: merge into KeyboardLeft
 public class KeyboardBlockRight extends Block implements IPeripheral {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public KeyboardBlockRight() {
-        super(Properties.copy(Blocks.STONE)
+        super(Properties.ofFullCopy(Blocks.STONE)
                 .strength(1.5f, 10.f));
     }
     

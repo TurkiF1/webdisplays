@@ -4,6 +4,7 @@
 
 package net.montoyo.wd.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -44,6 +45,7 @@ import net.montoyo.wd.utilities.serialization.Util;
 import org.jetbrains.annotations.NotNull;
 
 public class ScreenBlock extends BaseEntityBlock {
+    public static final MapCodec<ScreenBlock> CODEC = simpleCodec(ScreenBlock::new);
     public static final BooleanProperty hasTE = BooleanProperty.create("haste");
     public static final BooleanProperty emitting = BooleanProperty.create("emitting");
     private static final Property<?>[] properties = new Property<?>[]{hasTE, emitting};
@@ -51,6 +53,11 @@ public class ScreenBlock extends BaseEntityBlock {
     public ScreenBlock(Properties properties) {
         super(properties.strength(1.5f, 10.f));
         this.registerDefaultState(this.defaultBlockState().setValue(hasTE, false).setValue(emitting, false));
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     @Override

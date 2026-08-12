@@ -5,7 +5,6 @@
 package net.montoyo.wd.client.gui.controls;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
@@ -13,7 +12,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
@@ -131,7 +130,7 @@ public abstract class Control {
         RenderSystem.setShaderColor(1, 1, 1, 1f);
 //        RenderSystem.disableTexture();
         RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.defaultBlendFunc();
 
         VertexConsumer consumer = source.getBuffer(RenderType.gui());
         consumer.vertex(x1, y2, 0.0).color(r, g, b, a).endVertex();
@@ -164,7 +163,7 @@ public abstract class Control {
     public static void blend(boolean enable) {
         if(enable) {
             RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_CONSTANT_ALPHA);
+            RenderSystem.defaultBlendFunc();
         } else
             RenderSystem.disableBlend();
     }
@@ -194,7 +193,7 @@ public abstract class Control {
         RenderSystem.setShaderColor(((float) r) / 255.f, ((float) g) / 255.f, ((float) b) / 255.f, ((float) a) / 255.f);
 //        RenderSystem.enableTexture();
         RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.defaultBlendFunc();
 
         vBuffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
         //Top edge (y = y1)

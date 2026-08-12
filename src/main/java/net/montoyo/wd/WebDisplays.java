@@ -165,7 +165,7 @@ public class WebDisplays {
     }
 
     @SubscribeEvent
-    public static void onAttachPlayerCap(AttachCapabilitiesEvent<Entity> event) {
+    public static void onAttachPlayerCap(AttachCapabilitiesEvent.Entities event) {
         if (event.getObject() instanceof Player && !event.getObject().getCapability(WDDCapability.Provider.cap).isPresent()) {
             event.addCapability(new Identifier("webdisplays", "wddcapability"), new WDDCapability.Provider());
         }
@@ -323,7 +323,7 @@ public class WebDisplays {
     }
 
     @SubscribeEvent
-    public void attachEntityCaps(AttachCapabilitiesEvent<Entity> ev) {
+    public void attachEntityCaps(AttachCapabilitiesEvent.Entities ev) {
         if(ev.getObject() instanceof Player)
             ev.addCapability(CAPABILITY, new WDDCapability.Provider());
     }
