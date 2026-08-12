@@ -19,8 +19,8 @@ import javax.annotation.Nullable;
 public class ItemUpgrade extends ItemMulti implements IUpgrade, WDItem {
     public final DefaultUpgrade type;
 
-    public ItemUpgrade(DefaultUpgrade type) {
-        super(DefaultUpgrade.class, new Properties()/*.tab(WebDisplays.CREATIVE_TAB)*/);
+    public ItemUpgrade(DefaultUpgrade type, Properties properties) {
+        super(DefaultUpgrade.class, properties/*.tab(WebDisplays.CREATIVE_TAB)*/);
         this.type = type;
     }
 
