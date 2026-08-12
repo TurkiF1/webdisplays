@@ -31,6 +31,17 @@ jobs:
           test -n "$MOD_JAR"
           unzip -p "$MOD_JAR" webdisplays.mixins.json > packaged-mixins.json
           ! grep -Eq '"(MouseHandlerMixin|OverlayMixin)"' packaged-mixins.json
+          ! rg -U '@SubscribeEvent\s+public\s+static' src/main/java
+      - name: Smoke-test NeoForge server startup
+        run: |
+          mkdir -p run-server
+          echo 'eula=true' > run-server/eula.txt
+          set +e
+          timeout 90s ./gradlew runServer --nogui --stacktrace > server-smoke.log 2>&1
+          STATUS=$?
+          cat server-smoke.log
+          if [ "$STATUS" -ne 124 ]; then exit "$STATUS"; fi
+          grep -q 'Done (' run-server/logs/latest.log
       - name: Upload build output
         if: always()
         uses: actions/upload-artifact@v5
