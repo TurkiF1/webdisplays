@@ -6,6 +6,8 @@ package net.montoyo.wd.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -34,13 +36,14 @@ public abstract class AbstractPeripheralBlockEntity extends BlockEntity implemen
 
     // TODO
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        CompoundTag tag = net.montoyo.wd.utilities.serialization.Util.readRootTag(input);
 
-        if (tag.contains("WDScreen", 10)) {
-            CompoundTag scr = tag.getCompound("WDScreen");
-            screenPos = new Vector3i(scr.getInt("X"), scr.getInt("Y"), scr.getInt("Z"));
-            screenSide = BlockSide.values()[scr.getByte("Side")];
+        if (tag.contains("WDScreen")) {
+            CompoundTag scr = tag.getCompoundOrEmpty("WDScreen");
+            screenPos = new Vector3i(scr.getIntOr("X", 0), scr.getIntOr("Y", 0), scr.getIntOr("Z", 0));
+            screenSide = BlockSide.values()[scr.getByteOr("Side", (byte) 0)];
         } else {
             screenPos = null;
             screenSide = null;
@@ -48,8 +51,9 @@ public abstract class AbstractPeripheralBlockEntity extends BlockEntity implemen
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        CompoundTag tag = new CompoundTag();
 
         if (screenPos != null && screenSide != null) {
             CompoundTag scr = new CompoundTag();
@@ -60,19 +64,7 @@ public abstract class AbstractPeripheralBlockEntity extends BlockEntity implemen
 
             tag.put("WDScreen", scr);
         }
-    }
-
-    // this is not used for loading from disk, so I'm marking it final
-    @Override
-    public final void deserializeNBT(CompoundTag tag) {
-        super.deserializeNBT(tag);
-    }
-
-    // this is not used for writing to disk, so I'm marking it final
-    @Override
-    @Nonnull
-    public final CompoundTag serializeNBT() {
-        return super.serializeNBT();
+        net.montoyo.wd.utilities.serialization.Util.writeRootTag(output, tag);
     }
 
     @Override

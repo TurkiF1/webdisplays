@@ -25,7 +25,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ServerChatEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -67,10 +66,10 @@ public class WebDisplays {
 
     public static SharedProxy PROXY = null;
     
-    public static final Identifier ADV_PAD_BREAK = new Identifier("webdisplays", "webdisplays/pad_break");
+    public static final Identifier ADV_PAD_BREAK = Identifier.fromNamespaceAndPath("webdisplays", "webdisplays/pad_break");
     public static final String BLACKLIST_URL = "mod://webdisplays/blacklisted.html";
     public static final Gson GSON = new Gson();
-    public static final Identifier CAPABILITY = new Identifier("webdisplays", "customdatacap");
+    public static final Identifier CAPABILITY = Identifier.fromNamespaceAndPath("webdisplays", "customdatacap");
 
     //Sounds
     public SoundEvent soundTyping;
@@ -245,21 +244,17 @@ public class WebDisplays {
 
     @SubscribeEvent
     public void onToss(ItemTossEvent ev) {
-        if(!ev.getEntity().level().isClientSide) {
+        if(!ev.getEntity().level().isClientSide()) {
             ItemStack is = ev.getEntity().getItem();
 
             if(is.getItem() == ItemRegistry.MINEPAD.get()) {
-                CompoundTag tag = is.getTag();
+                CompoundTag tag = Util.getOrCreateItemTag(is);
 
-                if(tag == null) {
-                    tag = new CompoundTag();
-                    is.setTag(tag);
-                }
-
-                UUID thrower = ev.getPlayer().getGameProfile().getId();
+                UUID thrower = ev.getPlayer().getGameProfile().id();
                 tag.putLong("ThrowerMSB", thrower.getMostSignificantBits());
                 tag.putLong("ThrowerLSB", thrower.getLeastSignificantBits());
                 tag.putDouble("ThrowHeight", ev.getPlayer().getY() + ev.getPlayer().getEyeHeight());
+                Util.setItemTag(is, tag);
             }
         }
     }
@@ -270,7 +265,7 @@ public class WebDisplays {
             if((ev.getEntity() instanceof ServerPlayer && !hasPlayerAdvancement((ServerPlayer) ev.getEntity(), ADV_PAD_BREAK)) || PROXY.hasClientPlayerAdvancement(ADV_PAD_BREAK) != HasAdvancement.YES) {
                 ev.getCrafting().setDamageValue(CraftComponent.BADEXTCARD.ordinal());
 
-                if(!ev.getEntity().level().isClientSide)
+                if(!ev.getEntity().level().isClientSide())
                     ev.getEntity().level().playSound(null, ev.getEntity().getX(), ev.getEntity().getY(), ev.getEntity().getZ(), SoundEvents.ITEM_BREAK, SoundSource.MASTER, 1.0f, 1.0f);
             }
         }
@@ -287,9 +282,9 @@ public class WebDisplays {
             return;
         }
 
-        if(!ev.getEntity().level().isClientSide && ev.getEntity() instanceof ServerPlayer) {
+        if(!ev.getEntity().level().isClientSide() && ev.getEntity() instanceof ServerPlayer) {
             CompoundTag persistentData = ev.getEntity().getPersistentData();
-            if (!persistentData.getBoolean("webdisplays_welcomed")) {
+            if (!persistentData.getBooleanOr("webdisplays_welcomed", false)) {
                 Util.toast(ev.getEntity(), ChatFormatting.LIGHT_PURPLE, "welcome1");
                 Util.toast(ev.getEntity(), ChatFormatting.LIGHT_PURPLE, "welcome2");
                 Util.toast(ev.getEntity(), ChatFormatting.LIGHT_PURPLE, "welcome3");
@@ -309,13 +304,13 @@ public class WebDisplays {
 
     @SubscribeEvent
     public void onLogOut(PlayerEvent.PlayerLoggedOutEvent ev) {
-        if(!ev.getEntity().level().isClientSide)
-            Server.getInstance().getClientManager().revokeClientKey(ev.getEntity().getGameProfile().getId());
+        if(!ev.getEntity().level().isClientSide())
+            Server.getInstance().getClientManager().revokeClientKey(ev.getEntity().getGameProfile().id());
     }
 
     @SubscribeEvent
     public void onPlayerClone(PlayerEvent.Clone ev) {
-        if (ev.getOriginal().getPersistentData().getBoolean("webdisplays_welcomed"))
+        if (ev.getOriginal().getPersistentData().getBooleanOr("webdisplays_welcomed", false))
             ev.getEntity().getPersistentData().putBoolean("webdisplays_welcomed", true);
     }
 
@@ -358,7 +353,7 @@ public class WebDisplays {
     public static DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, "webdisplays");
 
     private static SoundEvent registerSound(String resName) {
-        Identifier resLoc = new Identifier("webdisplays", resName);
+        Identifier resLoc = Identifier.fromNamespaceAndPath("webdisplays", resName);
         SoundEvent ret = SoundEvent.createVariableRangeEvent(resLoc);
 
         SOUNDS.register(resName, () -> ret);

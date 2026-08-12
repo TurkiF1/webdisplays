@@ -6,6 +6,8 @@ package net.montoyo.wd.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -29,25 +31,28 @@ public class RedstoneControlBlockEntity extends AbstractPeripheralBlockEntity {
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        CompoundTag tag = Util.readRootTag(input);
 
-        risingEdgeURL = tag.getString("RisingEdgeURL");
-        fallingEdgeURL = tag.getString("FallingEdgeURL");
-        state = tag.getBoolean("Powered");
+        risingEdgeURL = tag.getStringOr("RisingEdgeURL", "");
+        fallingEdgeURL = tag.getStringOr("FallingEdgeURL", "");
+        state = tag.getBooleanOr("Powered", false);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        CompoundTag tag = new CompoundTag();
         tag.putString("RisingEdgeURL", risingEdgeURL);
         tag.putString("FallingEdgeURL", fallingEdgeURL);
         tag.putBoolean("Powered", state);
+        Util.writeRootTag(output, tag);
     }
 
     @Override
     public InteractionResult onRightClick(Player player, InteractionHand hand) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return InteractionResult.SUCCESS;
 
         if (!isScreenChunkLoaded()) {
@@ -67,7 +72,7 @@ public class RedstoneControlBlockEntity extends AbstractPeripheralBlockEntity {
             return InteractionResult.SUCCESS;
         }
 
-        (new RedstoneCtrlData(level.dimension().location(), getBlockPos(), risingEdgeURL, fallingEdgeURL)).sendTo((ServerPlayer) player);
+        (new RedstoneCtrlData(level.dimension().identifier(), getBlockPos(), risingEdgeURL, fallingEdgeURL)).sendTo((ServerPlayer) player);
         return InteractionResult.SUCCESS;
     }
 
@@ -92,7 +97,7 @@ public class RedstoneControlBlockEntity extends AbstractPeripheralBlockEntity {
     }
 
     private void changeURL(String url) {
-        if (level.isClientSide || url.isEmpty())
+        if (level.isClientSide() || url.isEmpty())
             return;
 
         if (isScreenChunkLoaded()) {

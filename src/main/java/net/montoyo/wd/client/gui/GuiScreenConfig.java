@@ -136,7 +136,7 @@ public class GuiScreenConfig extends WDScreen {
     @Override
     public void init() {
         super.init();
-        loadFrom(new Identifier("webdisplays", "gui/screencfg.json"));
+        loadFrom(Identifier.fromNamespaceAndPath("webdisplays", "gui/screencfg.json"));
 
         friendBoxes = new CheckBox[] { boxFResolution, boxFUpgrades, boxFOthers, boxFFriends, boxFClick, boxFSetUrl };
         boxFResolution.setUserdata(ScreenRights.MODIFY_SCREEN);

@@ -88,7 +88,7 @@ public class GuiKeyboard extends WDScreen {
         else
             showWarning = !hasUserReadWarning();
 
-        loadFrom(new Identifier("webdisplays", "gui/kb_right.json"));
+        loadFrom(Identifier.fromNamespaceAndPath("webdisplays", "gui/kb_right.json"));
 
         if (showWarning) {
             int maxLabelW = 0;

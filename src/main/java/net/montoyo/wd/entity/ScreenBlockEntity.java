@@ -7,6 +7,7 @@ package net.montoyo.wd.entity;
 import com.cinemamod.mcef.MCEFBrowser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -20,6 +21,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -52,6 +55,7 @@ import net.montoyo.wd.utilities.math.Vector3f;
 import net.montoyo.wd.utilities.math.Vector3i;
 import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 import net.montoyo.wd.utilities.serialization.TypeData;
+import net.montoyo.wd.utilities.serialization.Util;
 import org.cef.browser.CefBrowser;
 
 import javax.annotation.Nonnull;
@@ -107,10 +111,13 @@ public class ScreenBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        loadScreens(Util.readRootTag(input));
+    }
 
-        ListTag list = tag.getList("WDScreens", Tag.TAG_COMPOUND);
+    private void loadScreens(CompoundTag tag) {
+        ListTag list = tag.getListOrEmpty("WDScreens");
         if (list.isEmpty())
             return;
 
@@ -124,19 +131,19 @@ public class ScreenBlockEntity extends BlockEntity {
 
         screens.clear();
         for (int i = 0; i < list.size(); i++)
-            screens.add(ScreenData.deserialize(list.getCompound(i)));
+            screens.add(ScreenData.deserialize(list.getCompound(i).orElseGet(CompoundTag::new)));
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag);
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = super.getUpdateTag(registries);
+        saveScreens(tag);
         return tag;
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        load(tag);
+    public void handleUpdateTag(ValueInput input) {
+        loadAdditional(input);
         for (ScreenData screen : screens) {
             if (screen.browser == null) screen.createBrowser(this, false);
             if (screen.browser != null) screen.browser.loadURL(screen.url);
@@ -145,9 +152,14 @@ public class ScreenBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        CompoundTag tag = new CompoundTag();
+        saveScreens(tag);
+        Util.writeRootTag(output, tag);
+    }
 
+    private void saveScreens(CompoundTag tag) {
         ListTag list = new ListTag();
         for (ScreenData scr : screens)
             list.add(scr.serialize());
@@ -199,7 +211,7 @@ public class ScreenBlockEntity extends BlockEntity {
 
         ret.clampResolution();
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             ret.setupRedstoneStatus(level, getBlockPos());
 
             if (sendUpdate)
@@ -208,7 +220,7 @@ public class ScreenBlockEntity extends BlockEntity {
 
         screens.add(ret);
 
-        if (level.isClientSide)
+        if (level.isClientSide())
             updateAABB();
         else
             setChanged();
@@ -244,7 +256,7 @@ public class ScreenBlockEntity extends BlockEntity {
             }
         screens.clear();
 
-        if (!level.isClientSide)
+        if (!level.isClientSide())
             setChanged();
     }
 
@@ -275,7 +287,7 @@ public class ScreenBlockEntity extends BlockEntity {
         scr.url = weburl;
         scr.videoType = VideoType.getTypeFromURL(weburl);
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             if (scr.browser != null)
                 scr.browser.loadURL(weburl);
         } else {
@@ -299,7 +311,7 @@ public class ScreenBlockEntity extends BlockEntity {
             return;
         }
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             if (screens.get(idx).browser != null) {
                 screens.get(idx).browser.close(true);
                 screens.get(idx).browser = null;
@@ -309,7 +321,7 @@ public class ScreenBlockEntity extends BlockEntity {
 
         screens.remove(idx);
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             if (screens.isEmpty()) //No more screens: remove tile entity
                 level.setBlockAndUpdate(getBlockPos(), BlockRegistry.SCREEN_BLOCk.get().defaultBlockState().setValue(ScreenBlock.hasTE, false));
             else
@@ -332,7 +344,7 @@ public class ScreenBlockEntity extends BlockEntity {
         scr.resolution = res;
         scr.clampResolution();
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             WebDisplays.PROXY.screenUpdateResolutionInGui(new Vector3i(getBlockPos()), side, res);
 
             if (scr.browser != null) {
@@ -373,7 +385,7 @@ public class ScreenBlockEntity extends BlockEntity {
             return;
         }
 
-        if (level.isClientSide)
+        if (level.isClientSide())
             Log.warning("TileEntityScreen.click() from client side is useless...");
         else if (getLaserUser(scr) == null)
             WDNetworkRegistry.INSTANCE.send(S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.CLICK, vec), WDNetworkRegistry.near(point(level, getBlockPos())));
@@ -420,7 +432,7 @@ public class ScreenBlockEntity extends BlockEntity {
 //			return;
 //		}
 //
-//		if (level.isClientSide) {
+//		if (level.isClientSide()) {
 //			if (scr.browser != null)
 //				scr.browser.runJS("if(typeof webdisplaysRedstoneCallback == \"function\") webdisplaysRedstoneCallback(" + vec.x + ", " + vec.y + ", " + redstoneLevel + ");", "");
 //		} else {
@@ -444,7 +456,7 @@ public class ScreenBlockEntity extends BlockEntity {
 //	}
 //
 //	public void handleJSRequest(ServerPlayer src, BlockSide side, int reqId, JSServerRequest req, Object[] data) {
-//		if (level.isClientSide) {
+//		if (level.isClientSide()) {
 //			Log.error("Called handleJSRequest client-side");
 //			return;
 //		}
@@ -456,8 +468,8 @@ public class ScreenBlockEntity extends BlockEntity {
 //			return;
 //		}
 //
-//		if (!scr.owner.uuid.equals(src.getGameProfile().getId())) {
-//			Log.warning("Player %s (UUID %s) tries to use the redstone output API on a screen he doesn't own!", src.getName(), src.getGameProfile().getId().toString());
+//		if (!scr.owner.uuid.equals(src.getGameProfile().id())) {
+//			Log.warning("Player %s (UUID %s) tries to use the redstone output API on a screen he doesn't own!", src.getName(), src.getGameProfile().id().toString());
 //			WDNetworkRegistry.INSTANCE.send(WDNetworkRegistry.player(src), new S2CMessageJSResponse(reqId, req, 403, "Only the owner can do that"));
 //			return;
 //		}
@@ -511,14 +523,14 @@ public class ScreenBlockEntity extends BlockEntity {
 
     @Override
     public void onLoad() {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             WebDisplays.PROXY.trackScreen(this, true);
         }
     }
 
     @Override
     public void onChunkUnloaded() {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             WebDisplays.PROXY.trackScreen(this, false);
 
             for (ScreenData scr : screens) {
@@ -576,7 +588,6 @@ public class ScreenBlockEntity extends BlockEntity {
         else renderBB = box.toMc();
     }
 
-    @Override
     @Nonnull
     public net.minecraft.world.phys.AABB getRenderBoundingBox() {
         return renderBB;
@@ -643,12 +654,12 @@ public class ScreenBlockEntity extends BlockEntity {
     public void setRemoved() {
         super.setRemoved();
 
-        if (level != null && level.isClientSide)
+        if (level != null && level.isClientSide())
             onChunkUnloaded();
     }
 
     public void addFriend(ServerPlayer ply, BlockSide side, NameUUIDPair pair) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             ScreenData scr = getScreen(side);
             if (scr == null) {
                 Log.error("Tried to add friend to invalid screen side %s", side.toString());
@@ -664,7 +675,7 @@ public class ScreenBlockEntity extends BlockEntity {
     }
 
     public void removeFriend(ServerPlayer ply, BlockSide side, NameUUIDPair pair) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             ScreenData scr = getScreen(side);
             if (scr == null) {
                 Log.error("Tried to remove friend from invalid screen side %s", side.toString());
@@ -680,7 +691,7 @@ public class ScreenBlockEntity extends BlockEntity {
     }
 
     public void setRights(ServerPlayer ply, BlockSide side, int fr, int or) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             ScreenData scr = getScreen(side);
             if (scr == null) {
                 Log.error("Tried to change rights of invalid screen on side %s", side.toString());
@@ -707,7 +718,7 @@ public class ScreenBlockEntity extends BlockEntity {
             return;
         }
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             if (scr.browser instanceof MCEFBrowser mcefBrowser) {
                 try {
                     if (text.startsWith("t")) {
@@ -770,7 +781,7 @@ public class ScreenBlockEntity extends BlockEntity {
     }
 
 //	public void updateUpgrades(BlockSide side, ItemStack[] upgrades) {
-//		if (!level.isClientSide) {
+//		if (!level.isClientSide()) {
 //			Log.error("Tried to call TileEntityScreen.updateUpgrades() from server side...");
 //			return;
 //		}
@@ -794,7 +805,7 @@ public class ScreenBlockEntity extends BlockEntity {
 
     //If equal is null, no duplicate check is preformed
     public boolean addUpgrade(BlockSide side, ItemStack is, @Nullable Player player, boolean abortIfExisting) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             IUpgrade itemAsUpgrade = (IUpgrade) is.getItem();
             ScreenData scr = getScreen(side);
 //            if (abortIfExisting && scr.upgrades.stream().anyMatch(otherStack -> itemAsUpgrade.isSameUpgrade(is, otherStack)))
@@ -829,7 +840,7 @@ public class ScreenBlockEntity extends BlockEntity {
         isCopy.setCount(1);
 
         scr.upgrades.add(isCopy);
-        if (player != null && !player.level().isClientSide) {
+        if (player != null && !player.level().isClientSide()) {
             WDNetworkRegistry.INSTANCE.send(S2CMessageScreenUpdate.upgrade(this, side, true, is), WDNetworkRegistry.near(point(level, getBlockPos())));
             itemAsUpgrade.onInstall(this, side, player, isCopy);
             playSoundAt(WebDisplays.INSTANCE.soundUpgradeAdd, getBlockPos(), 1.0f, 1.0f);
@@ -866,7 +877,7 @@ public class ScreenBlockEntity extends BlockEntity {
     }
 
     public void removeUpgrade(BlockSide side, ItemStack is, @Nullable Player player) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         ScreenData scr = getScreen(side);
@@ -893,7 +904,7 @@ public class ScreenBlockEntity extends BlockEntity {
         if (idxToRemove >= 0) {
             dropUpgrade(scr.upgrades.get(idxToRemove), side, player);
             scr.upgrades.remove(idxToRemove);
-            if (player != null && !player.level().isClientSide) {
+            if (player != null && !player.level().isClientSide()) {
                 WDNetworkRegistry.INSTANCE.send(S2CMessageScreenUpdate.upgrade(this, side, false, is), WDNetworkRegistry.near(point(level, getBlockPos())));
                 playSoundAt(WebDisplays.INSTANCE.soundUpgradeDel, getBlockPos(), 1.0f, 1.0f);
             }
@@ -923,7 +934,7 @@ public class ScreenBlockEntity extends BlockEntity {
     }
 
     private ScreenData getScreenForLaserOp(BlockSide side, Player ply) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return null;
 
         ScreenData scr = getScreen(side);
@@ -987,7 +998,7 @@ public class ScreenBlockEntity extends BlockEntity {
 
         if (remove == null) return;
 
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             final ScreenData scrn = remove;
             remove.upgrades.forEach(is -> dropUpgrade(is, scrn.side, null));
         }
@@ -999,7 +1010,7 @@ public class ScreenBlockEntity extends BlockEntity {
     }
 
     public void setOwner(BlockSide side, Player newOwner) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             Log.error("Called TileEntityScreen.setOwner() on client...");
             return;
         }
@@ -1028,7 +1039,7 @@ public class ScreenBlockEntity extends BlockEntity {
             return;
         }
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             boolean oldWasVertical = scr.rotation.isVertical;
             scr.rotation = rot;
 
@@ -1052,7 +1063,7 @@ public class ScreenBlockEntity extends BlockEntity {
 //			return;
 //		}
 //
-//		if (level.isClientSide) {
+//		if (level.isClientSide()) {
 //			if (scr.browser != null)
 //				scr.browser.runJS(code, "");
 //		}
@@ -1068,7 +1079,7 @@ public class ScreenBlockEntity extends BlockEntity {
 
         scr.autoVolume = av;
 
-        if (level.isClientSide)
+        if (level.isClientSide())
             WebDisplays.PROXY.screenUpdateAutoVolumeInGui(new Vector3i(getBlockPos()), side, av);
         else {
             WDNetworkRegistry.INSTANCE.send(S2CMessageScreenUpdate.autoVolume(this, side, av), WDNetworkRegistry.near(point(level, getBlockPos())));
@@ -1134,7 +1145,7 @@ public class ScreenBlockEntity extends BlockEntity {
             if (bhr == null || bhr.getType() != HitResult.Type.BLOCK || bhr.getDirection().ordinal() != side.ordinal()) {
                 return BlockHitResult.miss(
                         vec32,
-                        bhr == null ? Direction.getNearest(look.x, look.y, look.z).getOpposite() : bhr.getDirection(),
+                        bhr == null ? Direction.getApproximateNearest((float) look.x, (float) look.y, (float) look.z).getOpposite() : bhr.getDirection(),
                         getBlockPos()
                 );
             }

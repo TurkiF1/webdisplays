@@ -14,7 +14,7 @@ import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 import java.util.function.Function;
 
 public class OwnerControl extends ScreenControl {
-	public static final Identifier id = new Identifier("webdisplays:set_owner");
+	public static final Identifier id = Identifier.parse("webdisplays:set_owner");
 	
 	NameUUIDPair owner;
 	

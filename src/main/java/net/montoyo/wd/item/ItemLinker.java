@@ -41,7 +41,7 @@ public class ItemLinker extends Item implements WDItem {
             return InteractionResult.SUCCESS;
 
         ItemStack stack = context.getPlayer().getItemInHand(context.getHand());
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = Util.getItemTag(stack);
 
         if (tag != null) {
             if (tag.contains("ScreenX") && tag.contains("ScreenY") && tag.contains("ScreenZ") && tag.contains("ScreenSide")) {
@@ -55,7 +55,7 @@ public class ItemLinker extends Item implements WDItem {
                     if (te == null || !(te instanceof IPeripheral)) {
                         if (context.getPlayer().isShiftKeyDown()) {
                             Util.toast(context.getPlayer(), ChatFormatting.GOLD, "linkAbort");
-                            stack.setTag(null);
+                            Util.setItemTag(stack, null);
                         } else
                             Util.toast(context.getPlayer(), "peripheral");
 
@@ -65,8 +65,8 @@ public class ItemLinker extends Item implements WDItem {
                     target = (IPeripheral) te;
                 }
 
-                Vector3i tePos = new Vector3i(tag.getInt("ScreenX"), tag.getInt("ScreenY"), tag.getInt("ScreenZ"));
-                BlockSide scrSide = BlockSide.values()[tag.getByte("ScreenSide")];
+                Vector3i tePos = new Vector3i(tag.getIntOr("ScreenX", 0), tag.getIntOr("ScreenY", 0), tag.getIntOr("ScreenZ", 0));
+                BlockSide scrSide = BlockSide.values()[tag.getByteOr("ScreenSide", (byte) 0)];
 
                 if (target.connect(context.getLevel(), context.getClickedPos(), state, tePos, scrSide)) {
                     Util.toast(context.getPlayer(), ChatFormatting.AQUA, "linked");
@@ -76,7 +76,7 @@ public class ItemLinker extends Item implements WDItem {
                 } else
                     Util.toast(context.getPlayer(), "linkError");
 
-                stack.setTag(null);
+                Util.setItemTag(stack, null);
                 return InteractionResult.SUCCESS;
             }
         }
@@ -108,7 +108,7 @@ public class ItemLinker extends Item implements WDItem {
             tag.putInt("ScreenZ", pos.z);
             tag.putByte("ScreenSide", (byte) side.ordinal());
 
-            stack.setTag(tag);
+            Util.setItemTag(stack, tag);
             Util.toast(context.getPlayer(), ChatFormatting.AQUA, "screenSet2");
         }
 

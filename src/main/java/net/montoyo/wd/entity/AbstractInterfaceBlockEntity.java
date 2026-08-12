@@ -6,6 +6,8 @@ package net.montoyo.wd.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,15 +43,15 @@ public abstract class AbstractInterfaceBlockEntity extends AbstractPeripheralBlo
     private static final Object[] FALSE = new Object[] { false };
     
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        owner = Util.readOwnerFromNBT(tag);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        owner = Util.readOwnerFromNBT(Util.readRootTag(input));
     }
     
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        Util.writeOwnerToNBT(tag, owner);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        Util.writeRootTag(output, Util.writeOwnerToNBT(new CompoundTag(), owner));
     }
     
     public void setOwner(Player ep) {

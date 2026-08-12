@@ -15,7 +15,7 @@ import net.montoyo.wd.utilities.math.Vector3i;
 import java.util.function.Function;
 
 public class SetURLControl extends ScreenControl {
-	public static final Identifier id = new Identifier("webdisplays:set_url");
+	public static final Identifier id = Identifier.parse("webdisplays:set_url");
 	
 	String url;
 	Vector3i remoteLocation;

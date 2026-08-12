@@ -16,7 +16,7 @@ import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 import java.util.function.Function;
 
 public class ModifyFriendListControl extends ScreenControl {
-	public static final Identifier id = new Identifier("webdisplays:mod_friend_list");
+	public static final Identifier id = Identifier.parse("webdisplays:mod_friend_list");
 	
 	boolean adding;
 	NameUUIDPair friend;

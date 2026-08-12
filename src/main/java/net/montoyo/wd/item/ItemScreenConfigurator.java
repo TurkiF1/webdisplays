@@ -33,7 +33,7 @@ public class ItemScreenConfigurator extends Item implements WDItem {
         if (context.getPlayer().isShiftKeyDown() || !(context.getLevel().getBlockState(context.getClickedPos()).getBlock() instanceof ScreenBlock))
             return InteractionResult.PASS;
 
-        if (context.getLevel().isClientSide)
+        if (context.getLevel().isClientSide())
             return InteractionResult.SUCCESS;
 
         Vector3i origin = new Vector3i(context.getClickedPos());

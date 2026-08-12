@@ -14,7 +14,7 @@ import net.montoyo.wd.utilities.data.BlockSide;
 import java.util.function.Function;
 
 public class KeyTypedControl extends ScreenControl {
-	public static final Identifier id = new Identifier("webdisplays:type");
+	public static final Identifier id = Identifier.parse("webdisplays:type");
 	
 	String text;
 	BlockPos soundPos;

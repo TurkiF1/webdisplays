@@ -150,7 +150,7 @@ public class Client extends AbstractClient implements Runnable {
         if (clientUUID == null) {
             Player player = Minecraft.getInstance().player;
             if (player != null)
-                clientUUID = player.getGameProfile().getId();
+                clientUUID = player.getGameProfile().id();
             else return; // can't tick yet; player does not exist
         }
         

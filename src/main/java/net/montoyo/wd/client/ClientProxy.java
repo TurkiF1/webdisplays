@@ -62,6 +62,7 @@ import net.montoyo.wd.client.gui.*;
 import net.montoyo.wd.client.gui.loading.GuiLoader;
 import net.montoyo.wd.client.renderers.*;
 import net.montoyo.wd.core.HasAdvancement;
+import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.data.GuiData;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.entity.ScreenData;
@@ -82,6 +83,7 @@ import net.montoyo.wd.utilities.data.Rotation;
 import net.montoyo.wd.utilities.math.Vector2i;
 import net.montoyo.wd.utilities.math.Vector3i;
 import net.montoyo.wd.utilities.serialization.NameUUIDPair;
+import net.montoyo.wd.utilities.serialization.Util;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefMessageRouter;
 import org.cef.misc.CefCursorType;
@@ -132,7 +134,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		if (!LaserPointerRenderer.isOn()) {
 			RenderSystem.defaultBlendFunc();
 
-			poseStack.blit(new Identifier(
+			poseStack.blit(Identifier.parse(
 					"webdisplays:textures/gui/cursors.png"
 			), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, 240, 240, 15, 15, 256, 256);
 			ci.cancel();
@@ -148,7 +150,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockRegistry.SCREEN_BLOCk.get()) {
 			RenderSystem.defaultBlendFunc();
 
-			poseStack.blit(new Identifier(
+			poseStack.blit(Identifier.parse(
 					"webdisplays:textures/gui/cursors.png"
 			), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, 240, 240, 15, 15, 256, 256);
 			ci.cancel();
@@ -174,7 +176,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		
 		RenderSystem.defaultBlendFunc();
 
-		poseStack.blit(new Identifier(
+		poseStack.blit(Identifier.parse(
 				"webdisplays:textures/gui/cursors.png"
 		), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, coordX, coordY, 15, 15, 256, 256);
 
@@ -694,7 +696,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		Item item = ev.getItemStack().getItem();
 		IItemRenderer renderer;
 		
-		if (ItemRegistry.MINEPAD.isPresent() && ItemRegistry.LASER_POINTER.isPresent()) {
+		if (ItemRegistry.MINEPAD.isBound() && ItemRegistry.LASER_POINTER.isBound()) {
 			if (item == ItemRegistry.MINEPAD.get())
 				renderer = minePadRenderer;
 			else if (item == ItemRegistry.LASER_POINTER.get())
@@ -715,9 +717,9 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	public void onWorldUnload(LevelEvent.Unload ev) {
 		Log.info("World unloaded; killing screens...");
 		if (ev.getLevel() instanceof Level level) {
-			Identifier dim = level.dimension().location();
+			Identifier dim = level.dimension().identifier();
 			for (int i = screenTracking.size() - 1; i >= 0; i--) {
-				if (screenTracking.get(i).getLevel().dimension().location().equals(dim)) //Could be world == ev.getWorld()
+				if (screenTracking.get(i).getLevel().dimension().identifier().equals(dim)) //Could be world == ev.getWorld()
 					screenTracking.remove(i).unload();
 			}
 		}
@@ -737,12 +739,12 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		for (int i = 0; i < cnt; i++) {
 			ItemStack item = inv.get(i);
 			
-			if (ItemRegistry.MINEPAD.isPresent()) {
+			if (ItemRegistry.MINEPAD.isBound()) {
 				if (item.getItem() == ItemRegistry.MINEPAD.get()) {
-					CompoundTag tag = item.getTag();
+					CompoundTag tag = Util.getItemTag(item);
 					
 					if (tag != null && tag.contains("PadID"))
-						updatePad(tag.getUUID("PadID"), tag, item == heldStack);
+						updatePad(Util.getUUID(tag, "PadID"), tag, item == heldStack);
 				}
 			}
 		}
@@ -754,7 +756,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		if (pd != null)
 			pd.isInHotbar = true;
 		else if (isSelected && tag.contains("PadURL")) {
-			pd = new PadData(tag.getString("PadURL"), id);
+			pd = new PadData(tag.getStringOr("PadURL", CommonConfig.Browser.homepage), id);
 			padMap.put(id, pd);
 			padList.add(pd);
 		}

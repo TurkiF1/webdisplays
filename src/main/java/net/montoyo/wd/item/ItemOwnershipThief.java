@@ -38,7 +38,7 @@ public class ItemOwnershipThief extends Item implements WDItem {
         if (context.getPlayer().isShiftKeyDown())
             return InteractionResult.PASS;
 
-        if (context.getLevel().isClientSide)
+        if (context.getLevel().isClientSide())
             return InteractionResult.SUCCESS;
 
         if (CommonConfig.disableOwnershipThief) {
@@ -47,12 +47,13 @@ public class ItemOwnershipThief extends Item implements WDItem {
         }
 
         ItemStack stack = context.getPlayer().getItemInHand(context.getHand());
-        if (stack.hasTag()) {
-            CompoundTag tag = stack.getTag();
+        CompoundTag existingTag = Util.getItemTag(stack);
+        if (existingTag != null) {
+            CompoundTag tag = existingTag;
 
             if (tag.contains("PosX") && tag.contains("PosY") && tag.contains("PosZ") && tag.contains("Side")) {
-                BlockPos bp = new BlockPos(tag.getInt("PosX"), tag.getInt("PosY"), tag.getInt("PosZ"));
-                BlockSide side = BlockSide.values()[tag.getByte("Side")];
+                BlockPos bp = new BlockPos(tag.getIntOr("PosX", 0), tag.getIntOr("PosY", 0), tag.getIntOr("PosZ", 0));
+                BlockSide side = BlockSide.values()[tag.getByteOr("Side", (byte) 0)];
 
                 if (!(context.getLevel().getBlockState(bp).getBlock() instanceof ScreenBlock))
                     return InteractionResult.SUCCESS;
@@ -66,7 +67,7 @@ public class ItemOwnershipThief extends Item implements WDItem {
                 if(scr == null)
                     return InteractionResult.SUCCESS;
 
-                Log.warning("Owner of screen at %d %d %d, side %s was changed from %s (UUID %s) to %s (UUID %s)", bp.getX(), bp.getY(), bp.getZ(), side.toString(), scr.owner.name, scr.owner.uuid.toString(), context.getPlayer().getName(), context.getPlayer().getGameProfile().getId().toString());
+                Log.warning("Owner of screen at %d %d %d, side %s was changed from %s (UUID %s) to %s (UUID %s)", bp.getX(), bp.getY(), bp.getZ(), side.toString(), scr.owner.name, scr.owner.uuid.toString(), context.getPlayer().getName(), context.getPlayer().getGameProfile().id().toString());
                 context.getPlayer().setItemInHand(context.getHand(), ItemStack.EMPTY);
                 tes.setOwner(side, context.getPlayer());
                 Util.toast(context.getPlayer(), ChatFormatting.AQUA, "newOwner");
@@ -96,9 +97,9 @@ public class ItemOwnershipThief extends Item implements WDItem {
             tag.putInt("PosZ", pos.z);
             tag.putByte("Side", (byte) side.ordinal());
 
-            stack.setTag(tag);
+            Util.setItemTag(stack, tag);
             Util.toast(context.getPlayer(), ChatFormatting.AQUA, "screenSet");
-            Log.warning("Player %s (UUID %s) created an Ownership Thief item for screen at %d %d %d, side %s!", context.getPlayer().getName(), context.getPlayer().getGameProfile().getId().toString(), pos.x, pos.y, pos.z, side.toString());
+            Log.warning("Player %s (UUID %s) created an Ownership Thief item for screen at %d %d %d, side %s!", context.getPlayer().getName(), context.getPlayer().getGameProfile().id().toString(), pos.x, pos.y, pos.z, side.toString());
         }
 
         return InteractionResult.SUCCESS;

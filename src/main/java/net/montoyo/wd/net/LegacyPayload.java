@@ -7,7 +7,7 @@ import net.minecraft.resources.Identifier;
 
 public record LegacyPayload(byte[] data) implements CustomPacketPayload {
     public static final Type<LegacyPayload> TYPE =
-            new Type<>(new Identifier("webdisplays", "legacy_packet"));
+            new Type<>(Identifier.fromNamespaceAndPath("webdisplays", "legacy_packet"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, LegacyPayload> STREAM_CODEC =
             StreamCodec.of(

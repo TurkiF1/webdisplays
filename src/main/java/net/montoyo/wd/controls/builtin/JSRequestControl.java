@@ -15,7 +15,7 @@ import net.montoyo.wd.utilities.data.BlockSide;
 import java.util.function.Function;
 
 public class JSRequestControl extends ScreenControl {
-	public static final Identifier id = new Identifier("webdisplays:js_req");
+	public static final Identifier id = Identifier.parse("webdisplays:js_req");
 	
 	int reqId;
 	JSServerRequest reqType;
@@ -49,7 +49,7 @@ public class JSRequestControl extends ScreenControl {
 	@Override
 	public void handleServer(BlockPos pos, BlockSide side, ScreenBlockEntity tes, net.montoyo.wd.net.PacketContext ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
 		ServerPlayer player = ctx.getSender();
-//		if (reqType == null || data == null) Log.warning("Caught invalid JS request from player %s (UUID %s)", player.getName(), player.getGameProfile().getId().toString());
+//		if (reqType == null || data == null) Log.warning("Caught invalid JS request from player %s (UUID %s)", player.getName(), player.getGameProfile().id().toString());
 //		else tes.handleJSRequest(player, side, reqId, reqType, data);
 	}
 	

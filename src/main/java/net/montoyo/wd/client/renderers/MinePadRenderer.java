@@ -28,7 +28,7 @@ import static com.mojang.math.Axis.*;
 public final class MinePadRenderer implements IItemRenderer {
 	private static final float PI = (float) Math.PI;
 	private final Minecraft mc = Minecraft.getInstance();
-	private final Identifier tex = new Identifier("webdisplays", "textures/item/model/minepad.png");
+	private final Identifier tex = Identifier.fromNamespaceAndPath("webdisplays", "textures/item/model/minepad.png");
 	private final ModelMinePad model = new ModelMinePad();
 	private final ClientProxy clientProxy = (ClientProxy) WebDisplays.PROXY;
 	
@@ -101,8 +101,9 @@ public final class MinePadRenderer implements IItemRenderer {
 		// force draw so the browser can be drawn ontop of the model
 		multiBufferSource.getBuffer(RenderType.lines());
 		
-		if (is.getTag() != null && is.getTag().contains("PadID")) {
-			ClientProxy.PadData pd = clientProxy.getPadByID(is.getTag().getUUID("PadID"));
+		net.minecraft.nbt.CompoundTag itemTag = net.montoyo.wd.utilities.serialization.Util.getItemTag(is);
+		if (itemTag != null && itemTag.contains("PadID")) {
+			ClientProxy.PadData pd = clientProxy.getPadByID(net.montoyo.wd.utilities.serialization.Util.getUUID(itemTag, "PadID"));
 			
 			//Render web view
 			if (pd != null) {

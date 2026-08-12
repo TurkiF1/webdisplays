@@ -24,7 +24,7 @@ public class Criterion extends SimpleCriterionTrigger<Criterion.Instance> {
     private final Identifier id;
 
     public Criterion(@Nonnull String name) {
-        id = new Identifier("webdisplays", name);
+        id = Identifier.fromNamespaceAndPath("webdisplays", name);
     }
 
     public Identifier id() {

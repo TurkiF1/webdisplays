@@ -85,7 +85,7 @@ public class KeyboardBlockLeft extends PeripheralBlock {
     @Override
     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         double rpos = (entity.getY() - ((double) pos.getY())) * 16.0;
-        if (!world.isClientSide && rpos >= 1.0 && rpos <= 2.0 && Math.random() < 0.25) {
+        if (!world.isClientSide() && rpos >= 1.0 && rpos <= 2.0 && Math.random() < 0.25) {
             KeyboardBlockEntity tek = KeyboardBlockLeft.getTileEntity(state, world, pos);
             
             if (tek != null)
@@ -132,7 +132,7 @@ public class KeyboardBlockLeft extends PeripheralBlock {
     
     @Override
     public void onRemove(BlockState arg, Level arg2, BlockPos arg3, BlockState arg4, boolean bl) {
-        if (!arg2.isClientSide)
+        if (!arg2.isClientSide())
             remove(arg, arg2, arg3, false, false);
         super.onRemove(arg, arg2, arg3, arg4, bl);
     }

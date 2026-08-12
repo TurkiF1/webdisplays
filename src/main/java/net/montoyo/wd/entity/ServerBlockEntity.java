@@ -6,6 +6,8 @@ package net.montoyo.wd.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -24,15 +26,15 @@ public class ServerBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        owner = Util.readOwnerFromNBT(tag);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        owner = Util.readOwnerFromNBT(Util.readRootTag(input));
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        Util.writeOwnerToNBT(tag, owner);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        Util.writeRootTag(output, Util.writeOwnerToNBT(new CompoundTag(), owner));
     }
 
     public void setOwner(Player ep) {
@@ -41,7 +43,7 @@ public class ServerBlockEntity extends BlockEntity {
     }
 
     public void onPlayerRightClick(Player ply) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         if (WebDisplays.INSTANCE.miniservPort == 0)

@@ -14,7 +14,7 @@ import net.montoyo.wd.utilities.data.BlockSide;
 import java.util.function.Function;
 
 public class AutoVolumeControl extends ScreenControl {
-	public static final Identifier id = new Identifier("webdisplays:auto_volume");
+	public static final Identifier id = Identifier.parse("webdisplays:auto_volume");
 	
 	boolean autoVol;
 	

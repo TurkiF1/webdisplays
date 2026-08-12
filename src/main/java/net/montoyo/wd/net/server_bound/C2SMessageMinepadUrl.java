@@ -5,6 +5,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.montoyo.wd.item.ItemMinePad2;
 import net.montoyo.wd.net.Packet;
+import net.montoyo.wd.utilities.serialization.Util;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.UUID;
 
@@ -30,12 +32,14 @@ public class C2SMessageMinepadUrl extends Packet {
 	}
 	
 	protected void merge(ItemStack stack) {
+		CompoundTag tag = Util.getOrCreateItemTag(stack);
 		if (url.equals("")) {
-			stack.getOrCreateTag().remove("PadID");
+			tag.remove("PadID");
 		} else {
-			stack.getOrCreateTag().putUUID("PadID", id);
-			stack.getOrCreateTag().putString("PadURL", url);
+			Util.putUUID(tag, "PadID", id);
+			tag.putString("PadURL", url);
 		}
+		Util.setItemTag(stack, tag);
 	}
 	
 	@Override
@@ -44,8 +48,9 @@ public class C2SMessageMinepadUrl extends Packet {
 		// if the player is, then update that pad
 		for (InteractionHand value : InteractionHand.values()) {
 			ItemStack stack = ctx.getSender().getItemInHand(value);
-			if (stack.getItem() instanceof ItemMinePad2 && stack.getOrCreateTag().contains("PadID")) {
-				UUID padId = stack.getTag().getUUID("PadID");
+			CompoundTag tag = Util.getItemTag(stack);
+			if (stack.getItem() instanceof ItemMinePad2 && tag != null && tag.contains("PadID")) {
+				UUID padId = Util.getUUID(tag, "PadID");
 				if (padId.equals(id)) {
 					merge(stack);
 					return;
@@ -56,7 +61,8 @@ public class C2SMessageMinepadUrl extends Packet {
 		// if the player is not holding the requested minePad, update the first one that does not already have an ID
 		for (InteractionHand value : InteractionHand.values()) {
 			ItemStack stack = ctx.getSender().getItemInHand(value);
-			if (stack.getItem() instanceof ItemMinePad2 && !stack.getOrCreateTag().contains("PadID")) {
+			CompoundTag tag = Util.getItemTag(stack);
+			if (stack.getItem() instanceof ItemMinePad2 && (tag == null || !tag.contains("PadID"))) {
 				merge(stack);
 				return;
 			}

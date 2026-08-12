@@ -16,7 +16,7 @@ import net.montoyo.wd.utilities.math.Vector2i;
 import java.util.function.Function;
 
 public class ScreenModifyControl extends ScreenControl {
-	public static final Identifier id = new Identifier("webdisplays:mod_screen");
+	public static final Identifier id = Identifier.parse("webdisplays:mod_screen");
 	
 	public enum ControlType {
 		RESOLUTION, ROTATION

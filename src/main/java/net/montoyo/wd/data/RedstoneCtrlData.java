@@ -53,7 +53,7 @@ public class RedstoneCtrlData extends GuiData {
 
     @Override
     public void deserialize(FriendlyByteBuf buf) {
-        dimension = new Identifier(buf.readUtf());
+        dimension = Identifier.parse(buf.readUtf());
         pos = BufferUtils.readVec3i(buf);
         risingEdgeURL = buf.readUtf();
         fallingEdgeURL = buf.readUtf();

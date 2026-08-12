@@ -96,7 +96,7 @@ public class ScreenBlock extends BaseEntityBlock {
         if (!isUpgrade && hand == InteractionHand.OFF_HAND)
             return InteractionResult.FAIL;
 
-        if (world.isClientSide)
+        if (world.isClientSide())
             return InteractionResult.FAIL;
 
         boolean sneaking = player.isShiftKeyDown();
@@ -176,7 +176,7 @@ public class ScreenBlock extends BaseEntityBlock {
         }
 
         boolean created = false;
-        Log.info("Player %s (UUID %s) created a screen at %s of size %dx%d", player.getName(), player.getGameProfile().getId().toString(), pos.toString(), size.x, size.y);
+        Log.info("Player %s (UUID %s) created a screen at %s of size %dx%d", player.getName(), player.getGameProfile().id().toString(), pos.toString(), size.x, size.y);
 
         if (te == null) {
             BlockPos bp = pos.toBlock();
@@ -192,7 +192,7 @@ public class ScreenBlock extends BaseEntityBlock {
     @Override
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos source,
                                 boolean isMoving) {
-        if (block != this && !world.isClientSide && !state.getValue(emitting)) {
+        if (block != this && !world.isClientSide() && !state.getValue(emitting)) {
             for (BlockSide side : BlockSide.values()) {
                 Vector3i vec = new Vector3i(pos);
                 Multiblock.findOrigin(world, vec, side, null);
@@ -264,7 +264,7 @@ public class ScreenBlock extends BaseEntityBlock {
     /************************************************* DESTRUCTION HANDLING *************************************************/
 
     private void onDestroy(Level world, BlockPos pos, Player ply) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             Vector3i bp = new Vector3i(pos);
             Multiblock.BlockOverride override = new Multiblock.BlockOverride(bp, Multiblock.OverrideAction.SIMULATE);
 
@@ -295,7 +295,7 @@ public class ScreenBlock extends BaseEntityBlock {
     @Override
     public void setPlacedBy(Level world, @NotNull BlockPos pos, @NotNull BlockState
             state, @org.jetbrains.annotations.Nullable LivingEntity whoDidThisShit, @NotNull ItemStack stack) {
-        if (world.isClientSide)
+        if (world.isClientSide())
             return;
 
         Multiblock.BlockOverride override = new Multiblock.BlockOverride(new Vector3i(pos), Multiblock.OverrideAction.IGNORE);

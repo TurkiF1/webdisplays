@@ -11,6 +11,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -19,6 +25,40 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 public abstract class Util {
+    public static CompoundTag readRootTag(ValueInput input) {
+        return input.read(com.mojang.serialization.MapCodec.assumeMapUnsafe(CompoundTag.CODEC))
+                .orElseGet(CompoundTag::new);
+    }
+
+    public static void writeRootTag(ValueOutput output, CompoundTag tag) {
+        output.store(tag);
+    }
+
+    public static CompoundTag getItemTag(ItemStack stack) {
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        return data == null ? null : data.copyTag();
+    }
+
+    public static CompoundTag getOrCreateItemTag(ItemStack stack) {
+        CompoundTag tag = getItemTag(stack);
+        return tag == null ? new CompoundTag() : tag;
+    }
+
+    public static void setItemTag(ItemStack stack, CompoundTag tag) {
+        if (tag == null || tag.isEmpty())
+            stack.remove(DataComponents.CUSTOM_DATA);
+        else
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+    }
+
+    public static UUID getUUID(CompoundTag tag, String key) {
+        return tag.read(key, UUIDUtil.CODEC).orElse(new UUID(0L, 0L));
+    }
+
+    public static void putUUID(CompoundTag tag, String key, UUID value) {
+        tag.store(key, UUIDUtil.CODEC, value);
+    }
+
     @Deprecated(forRemoval = true)
     public static void serialize(FriendlyByteBuf bb, Object f) {
         Class<?> cls = f.getClass();
@@ -85,7 +125,7 @@ public abstract class Util {
 
             return Arrays.copyOf(ray, ray.length, cls);
         } else if (cls == Identifier.class) {
-            return new Identifier(bb.readUtf());
+            return Identifier.parse(bb.readUtf());
         } else if (!cls.isPrimitive()) {
             Object ret;
             Field[] fields = cls.getFields();
@@ -193,9 +233,9 @@ public abstract class Util {
     }
 
     public static NameUUIDPair readOwnerFromNBT(CompoundTag tag) {
-        long msb = tag.getLong("OwnerMSB");
-        long lsb = tag.getLong("OwnerLSB");
-        String str = tag.getString("OwnerName");
+        long msb = tag.getLongOr("OwnerMSB", 0L);
+        long lsb = tag.getLongOr("OwnerLSB", 0L);
+        String str = tag.getStringOr("OwnerName", "");
 
         return new NameUUIDPair(str, new UUID(msb, lsb));
     }

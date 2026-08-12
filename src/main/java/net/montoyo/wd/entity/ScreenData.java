@@ -5,6 +5,7 @@ import com.cinemamod.mcef.MCEFBrowser;
 import com.cinemamod.mcef.listeners.MCEFCursorChangeListener;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;
@@ -51,11 +52,11 @@ public class ScreenData {
 
     public static ScreenData deserialize(CompoundTag tag) {
         ScreenData ret = new ScreenData();
-        ret.side = BlockSide.values()[tag.getByte("Side")];
-        ret.size = new Vector2i(tag.getInt("Width"), tag.getInt("Height"));
-        ret.resolution = new Vector2i(tag.getInt("ResolutionX"), tag.getInt("ResolutionY"));
-        ret.rotation = Rotation.values()[tag.getByte("Rotation")];
-        ret.url = tag.getString("URL");
+        ret.side = BlockSide.values()[tag.getByteOr("Side", (byte) 0)];
+        ret.size = new Vector2i(tag.getIntOr("Width", 0), tag.getIntOr("Height", 0));
+        ret.resolution = new Vector2i(tag.getIntOr("ResolutionX", 0), tag.getIntOr("ResolutionY", 0));
+        ret.rotation = Rotation.values()[tag.getByteOr("Rotation", (byte) 0)];
+        ret.url = tag.getStringOr("URL", "");
         ret.videoType = VideoType.getTypeFromURL(ret.url);
 
         if (ret.resolution.x <= 0 || ret.resolution.y <= 0) {
@@ -69,31 +70,32 @@ public class ScreenData {
         }
 
         if (tag.contains("OwnerName")) {
-            String name = tag.getString("OwnerName");
-            UUID uuid = tag.getUUID("OwnerUUID");
+            String name = tag.getStringOr("OwnerName", "");
+            UUID uuid = tag.read("OwnerUUID", UUIDUtil.CODEC).orElse(new UUID(0L, 0L));
             ret.owner = new NameUUIDPair(name, uuid);
         }
 
-        ListTag friends = tag.getList("Friends", 10);
+        ListTag friends = tag.getListOrEmpty("Friends");
         ret.friends = new ArrayList<>(friends.size());
 
         for (int i = 0; i < friends.size(); i++) {
-            CompoundTag nf = friends.getCompound(i);
-            NameUUIDPair pair = new NameUUIDPair(nf.getString("Name"), nf.getUUID("UUID"));
+            CompoundTag nf = friends.getCompound(i).orElseGet(CompoundTag::new);
+            NameUUIDPair pair = new NameUUIDPair(nf.getStringOr("Name", ""), nf.read("UUID", UUIDUtil.CODEC).orElse(new UUID(0L, 0L)));
             ret.friends.add(pair);
         }
 
-        ret.friendRights = tag.getByte("FriendRights");
-        ret.otherRights = tag.getByte("OtherRights");
+        ret.friendRights = tag.getByteOr("FriendRights", (byte) 0);
+        ret.otherRights = tag.getByteOr("OtherRights", (byte) 0);
 
-        ListTag upgrades = tag.getList("Upgrades", 10);
+        ListTag upgrades = tag.getListOrEmpty("Upgrades");
         ret.upgrades = new ArrayList<>();
 
         for (int i = 0; i < upgrades.size(); i++)
-            ret.upgrades.add(ItemStack.of(upgrades.getCompound(i)));
+            ret.upgrades.add(upgrades.getCompound(i).orElseGet(CompoundTag::new)
+                    .read("Stack", ItemStack.CODEC).orElse(ItemStack.EMPTY));
 
         if (tag.contains("AutoVolume"))
-            ret.autoVolume = tag.getBoolean("AutoVolume");
+            ret.autoVolume = tag.getBooleanOr("AutoVolume", true);
 
         return ret;
     }
@@ -112,14 +114,14 @@ public class ScreenData {
             Log.warning("Found TES with NO OWNER!!");
         else {
             tag.putString("OwnerName", owner.name);
-            tag.putUUID("OwnerUUID", owner.uuid);
+            tag.store("OwnerUUID", UUIDUtil.CODEC, owner.uuid);
         }
 
         ListTag list = new ListTag();
         for (NameUUIDPair f : friends) {
             CompoundTag nf = new CompoundTag();
             nf.putString("Name", f.name);
-            nf.putUUID("UUID", f.uuid);
+            nf.store("UUID", UUIDUtil.CODEC, f.uuid);
 
             list.add(nf);
         }
@@ -129,8 +131,11 @@ public class ScreenData {
         tag.putByte("OtherRights", (byte) otherRights);
 
         list = new ListTag();
-        for (ItemStack is : upgrades)
-            list.add(is.save(new CompoundTag()));
+        for (ItemStack is : upgrades) {
+            CompoundTag item = new CompoundTag();
+            item.store("Stack", ItemStack.CODEC, is);
+            list.add(item);
+        }
 
         tag.put("Upgrades", list);
         tag.putBoolean("AutoVolume", autoVolume);
@@ -138,7 +143,7 @@ public class ScreenData {
     }
 
     public int rightsFor(Player ply) {
-        return rightsFor(ply.getGameProfile().getId());
+        return rightsFor(ply.getGameProfile().id());
     }
 
     public int rightsFor(UUID uuid) {

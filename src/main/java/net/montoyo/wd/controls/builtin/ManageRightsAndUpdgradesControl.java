@@ -21,7 +21,7 @@ import java.util.function.Function;
  */
 @Deprecated
 public class ManageRightsAndUpdgradesControl extends ScreenControl {
-	public static final Identifier id = new Identifier("webdisplays:mod_rights_upgrades");
+	public static final Identifier id = Identifier.parse("webdisplays:mod_rights_upgrades");
 	
 	public enum ControlType {
 		RIGHTS, UPGRADES
@@ -91,7 +91,7 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 			case RIGHTS -> {
 				ScreenData scr = tes.getScreen(side);
 				
-				int fr = scr.owner.uuid.equals(player.getGameProfile().getId()) ? friendRights : scr.friendRights;
+				int fr = scr.owner.uuid.equals(player.getGameProfile().id()) ? friendRights : scr.friendRights;
 				int or = (scr.rightsFor(player) & ScreenRights.MANAGE_OTHER_RIGHTS) == 0 ? scr.otherRights : otherRights;
 				
 				if(scr.friendRights != fr || scr.otherRights != or)

@@ -123,7 +123,7 @@ public final class WDNetworkRegistry {
             } else if (target instanceof NearTarget nearTarget) {
                 TargetPoint point = nearTarget.point();
                 ServerLevel level = point.excluded() != null
-                        ? point.excluded().serverLevel()
+                        ? (ServerLevel) point.excluded().level()
                         : net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer()
                                 .getLevel(point.dimension());
                 if (level != null) {

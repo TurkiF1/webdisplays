@@ -72,7 +72,7 @@ public class GuiSetURL2 extends WDScreen {
 	@Override
 	public void init() {
 		super.init();
-		loadFrom(new Identifier("webdisplays", "gui/seturl.json"));
+		loadFrom(Identifier.fromNamespaceAndPath("webdisplays", "gui/seturl.json"));
 		tfURL.setText(screenURL);
 	}
 	
@@ -84,10 +84,12 @@ public class GuiSetURL2 extends WDScreen {
 	protected UUID getUUID() {
 		if (stack == null || !(stack.getItem() instanceof ItemMinePad2))
 			throw new RuntimeException("Get UUID is being called for a non-minepad UI");
-		if (!stack.hasTag() || !stack.getTag().contains("PadID"))
-			stack.getOrCreateTag().putUUID("PadID", UUID.randomUUID());
-		
-		return stack.getTag().getUUID("PadID");
+		CompoundTag tag = Util.getOrCreateItemTag(stack);
+		if (!tag.contains("PadID")) {
+			Util.putUUID(tag, "PadID", UUID.randomUUID());
+			Util.setItemTag(stack, tag);
+		}
+		return Util.getUUID(tag, "PadID");
 	}
 	
 	@GuiSubscribe
@@ -102,7 +104,9 @@ public class GuiSetURL2 extends WDScreen {
 						getUUID(),
 						""
 				));
-				stack.getTag().remove("PadID");
+				CompoundTag tag = Util.getOrCreateItemTag(stack);
+				tag.remove("PadID");
+				Util.setItemTag(stack, tag);
 			}
 			
 			minecraft.setScreen(null);
@@ -129,7 +133,9 @@ public class GuiSetURL2 extends WDScreen {
 			if (isPad) {
 				UUID uuid = getUUID();
 				WDNetworkRegistry.INSTANCE.sendToServer(new C2SMessageMinepadUrl(uuid, url));
-				stack.getTag().putString("PadURL", url);
+				CompoundTag tag = Util.getOrCreateItemTag(stack);
+				tag.putString("PadURL", url);
+				Util.setItemTag(stack, tag);
 				
 				ClientProxy.PadData pd = ((ClientProxy) WebDisplays.PROXY).getPadByID(uuid);
 				

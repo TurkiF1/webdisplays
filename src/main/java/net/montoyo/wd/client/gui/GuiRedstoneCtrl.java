@@ -42,7 +42,7 @@ public class GuiRedstoneCtrl extends WDScreen {
     @Override
     public void init() {
         super.init();
-        loadFrom(new Identifier("webdisplays", "gui/redstonectrl.json"));
+        loadFrom(Identifier.fromNamespaceAndPath("webdisplays", "gui/redstonectrl.json"));
         tfRisingEdge.setText(risingEdgeURL);
         tfFallingEdge.setText(fallingEdgeURL);
     }

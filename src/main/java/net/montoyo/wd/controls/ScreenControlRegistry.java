@@ -66,7 +66,7 @@ public class ScreenControlRegistry {
 	}
 	
 	public static ScreenControl parse(FriendlyByteBuf buf) {
-		return CONTROL_TYPES.get(new Identifier(buf.readUtf()))
+		return CONTROL_TYPES.get(Identifier.parse(buf.readUtf()))
 				.deserializer.apply(buf);
 	}
 	

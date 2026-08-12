@@ -22,7 +22,7 @@ public class RemoteControlBlockEntity extends AbstractPeripheralBlockEntity {
 
     @Override
     public InteractionResult onRightClick(Player player, InteractionHand hand) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return InteractionResult.SUCCESS;
 
         if (!isScreenChunkLoaded()) {

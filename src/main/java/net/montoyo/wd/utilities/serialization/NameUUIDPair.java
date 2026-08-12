@@ -24,8 +24,8 @@ public final class NameUUIDPair {
     }
 
     public NameUUIDPair(GameProfile profile) {
-        name = profile.getName();
-        uuid = profile.getId();
+        name = profile.name();
+        uuid = profile.id();
     }
 
     public NameUUIDPair(FriendlyByteBuf bb) {

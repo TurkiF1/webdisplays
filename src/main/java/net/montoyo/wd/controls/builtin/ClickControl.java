@@ -14,7 +14,7 @@ import net.montoyo.wd.utilities.math.Vector2i;
 import java.util.function.Function;
 
 public class ClickControl extends ScreenControl {
-	public static final Identifier id = new Identifier("webdisplays:click");
+	public static final Identifier id = Identifier.parse("webdisplays:click");
 	
 	public enum ControlType {
 		CLICK, MOVE, DOWN, UP

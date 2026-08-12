@@ -7,6 +7,8 @@ package net.montoyo.wd.block;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -72,7 +74,8 @@ public class PeripheralBlock extends WDContainerBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+        InteractionHand hand = InteractionHand.MAIN_HAND;
         if (player.isShiftKeyDown())
             return InteractionResult.FAIL;
 
@@ -97,7 +100,7 @@ public class PeripheralBlock extends WDContainerBlock {
 
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (world.isClientSide)
+        if (world.isClientSide())
             return;
 
         if (placer instanceof Player) {
@@ -116,22 +119,22 @@ public class PeripheralBlock extends WDContainerBlock {
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block neighborType, BlockPos neighbor, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block neighborType, @Nullable Orientation orientation, boolean isMoving) {
         BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof AbstractPeripheralBlockEntity)
-            ((AbstractPeripheralBlockEntity) te).onNeighborChange(neighborType, neighbor);
+            ((AbstractPeripheralBlockEntity) te).onNeighborChange(neighborType, pos);
     }
 
     @Override
     public void playerDestroy(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             WDNetworkRegistry.INSTANCE.send(new S2CMessageCloseGui(pos), WDNetworkRegistry.near(point(world, pos)));
         }
         super.playerDestroy(world, player, pos, state, blockEntity, tool);
     }
 
     @Override
-    public void onBlockExploded(BlockState state, Level level, BlockPos pos, Explosion explosion) {
+    public void onBlockExploded(BlockState state, ServerLevel level, BlockPos pos, Explosion explosion) {
         playerDestroy(level, null, pos, level.getBlockState(pos), null, null);
     }
 

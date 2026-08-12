@@ -21,6 +21,7 @@ import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.core.CraftComponent;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageMinepadUrl;
+import net.montoyo.wd.utilities.serialization.Util;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,16 +31,16 @@ public class ItemMinePad2 extends Item implements WDItem {
     public ItemMinePad2(Properties properties) {
         super(properties
                         .stacksTo(1)
-                        .defaultDurability(0)
 //				.tab(WebDisplays.CREATIVE_TAB)
         );
     }
 
     private static String getURL(ItemStack is) {
-        if (is.getTag() == null || !is.getTag().contains("PadURL"))
+        CompoundTag tag = Util.getItemTag(is);
+        if (tag == null || !tag.contains("PadURL"))
             return CommonConfig.Browser.homepage;
         else
-            return is.getTag().getString("PadURL");
+            return tag.getStringOr("PadURL", CommonConfig.Browser.homepage);
     }
 
     @Override
@@ -49,20 +50,22 @@ public class ItemMinePad2 extends Item implements WDItem {
         boolean ok;
 
         if (ply.isShiftKeyDown()) {
-            if (world.isClientSide)
+            if (world.isClientSide())
                 WebDisplays.PROXY.displaySetPadURLGui(is, getURL(is));
 
             ok = true;
-        } else if (is.getTag() != null && is.getTag().contains("PadID")) {
-            if (world.isClientSide)
-                WebDisplays.PROXY.openMinePadGui(is.getTag().getUUID("PadID"));
+        } else if (Util.getItemTag(is) != null && Util.getItemTag(is).contains("PadID")) {
+            if (world.isClientSide())
+                WebDisplays.PROXY.openMinePadGui(Util.getUUID(Util.getItemTag(is), "PadID"));
 
             ok = true;
         } else {
             UUID uuid = UUID.randomUUID();
             String url = getURL(is);
             WDNetworkRegistry.INSTANCE.sendToServer(new C2SMessageMinepadUrl(uuid, url));
-            is.getOrCreateTag().putUUID("PadID", uuid);
+            CompoundTag tag = Util.getOrCreateItemTag(is);
+            Util.putUUID(tag, "PadID", uuid);
+            Util.setItemTag(is, tag);
 
             ok = true;
         }
@@ -73,23 +76,24 @@ public class ItemMinePad2 extends Item implements WDItem {
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity ent) {
-        if (ent.onGround() && !ent.level().isClientSide) {
-            CompoundTag tag = ent.getItem().getTag();
+        if (ent.onGround() && !ent.level().isClientSide()) {
+            CompoundTag tag = Util.getItemTag(ent.getItem());
 
             if (tag != null && tag.contains("ThrowHeight")) {
                 //Delete it, it touched the ground
-                double height = tag.getDouble("ThrowHeight");
+                double height = tag.getDoubleOr("ThrowHeight", 0.0);
                 UUID thrower = null;
 
                 if (tag.contains("ThrowerMSB") && tag.contains("ThrowerLSB"))
-                    thrower = new UUID(tag.getLong("ThrowerMSB"), tag.getLong("ThrowerLSB"));
+                    thrower = new UUID(tag.getLongOr("ThrowerMSB", 0L), tag.getLongOr("ThrowerLSB", 0L));
 
                 if (tag.contains("PadID") || tag.contains("PadURL")) {
                     tag.remove("ThrowerMSB");
                     tag.remove("ThrowerLSB");
                     tag.remove("ThrowHeight");
+                    Util.setItemTag(ent.getItem(), tag);
                 } else //We can delete the whole tag
-                    ent.getItem().setTag(null);
+                    Util.setItemTag(ent.getItem(), null);
 
                 if (thrower != null && height - ent.getBlockY() >= 20.0) {
                     ent.level().playSound(null, ent.getBlockX(), ent.getBlockY(), ent.getBlockZ(), SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 4.0f, 1.0f);

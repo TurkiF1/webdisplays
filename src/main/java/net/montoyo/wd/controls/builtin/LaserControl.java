@@ -15,7 +15,7 @@ import net.montoyo.wd.utilities.math.Vector2i;
 import java.util.function.Function;
 
 public class LaserControl extends ScreenControl {
-	public static final Identifier id = new Identifier("webdisplays:laser");
+	public static final Identifier id = Identifier.parse("webdisplays:laser");
 	
 	public enum ControlType {
 		MOVE, DOWN, UP

@@ -40,7 +40,7 @@ public class C2SMessageMiniservConnect extends Packet {
 		if (checkServer(ctx)) {
 			try {
 				ClientManager cliMgr = Server.getInstance().getClientManager();
-				byte[] encKey = cliMgr.encryptClientKey(Objects.requireNonNull(ctx.getSender()).getGameProfile().getId(), modulus, exponent);
+				byte[] encKey = cliMgr.encryptClientKey(Objects.requireNonNull(ctx.getSender()).getGameProfile().id(), modulus, exponent);
 				
 				if (encKey != null) {
 					respond(ctx, new S2CMessageMiniservKey(encKey));

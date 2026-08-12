@@ -45,8 +45,8 @@ import static net.montoyo.wd.client.gui.GuiMinePad.getChar;
 
 public class GuiServer extends WDScreen {
 	
-	private static final Identifier BG_IMAGE = new Identifier("webdisplays", "textures/gui/server_bg.png");
-	private static final Identifier FG_IMAGE = new Identifier("webdisplays", "textures/gui/server_fg.png");
+	private static final Identifier BG_IMAGE = Identifier.fromNamespaceAndPath("webdisplays", "textures/gui/server_bg.png");
+	private static final Identifier FG_IMAGE = Identifier.fromNamespaceAndPath("webdisplays", "textures/gui/server_fg.png");
 	private static final HashMap<String, Method> COMMAND_MAP = new HashMap<>();
 	private static final int MAX_LINE_LEN = 32;
 	private static final int MAX_LINES = 12;
@@ -551,7 +551,7 @@ public class GuiServer extends WDScreen {
 	
 	@CommandHandler("quota")
 	public void commandQuota() {
-		if (!minecraft.player.getGameProfile().getId().equals(owner.uuid)) {
+		if (!minecraft.player.getGameProfile().id().equals(owner.uuid)) {
 			writeLine(tr("errowner"));
 			return;
 		}
@@ -673,7 +673,7 @@ public class GuiServer extends WDScreen {
 	
 	@CommandHandler("upload")
 	public void commandUpload(String[] args) {
-		if (!minecraft.player.getGameProfile().getId().equals(owner.uuid)) {
+		if (!minecraft.player.getGameProfile().id().equals(owner.uuid)) {
 			writeLine(tr("errowner"));
 			return;
 		}
@@ -705,7 +705,7 @@ public class GuiServer extends WDScreen {
 	
 	@CommandHandler("rm")
 	public void commandDelete(String[] args) {
-		if (!minecraft.player.getGameProfile().getId().equals(owner.uuid)) {
+		if (!minecraft.player.getGameProfile().id().equals(owner.uuid)) {
 			writeLine(tr("errowner"));
 			return;
 		}

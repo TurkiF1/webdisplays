@@ -45,7 +45,7 @@ public class RenderRecipe extends Screen {
 
     }
 
-    private static final Identifier CRAFTING_TABLE_GUI_TEXTURES = new Identifier("textures/gui/container/crafting_table.png");
+    private static final Identifier CRAFTING_TABLE_GUI_TEXTURES = Identifier.parse("textures/gui/container/crafting_table.png");
     private static final int SIZE_X = 176;
     private static final int SIZE_Y = 166;
     private int x;

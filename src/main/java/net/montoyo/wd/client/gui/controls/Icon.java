@@ -42,7 +42,7 @@ public class Icon extends BasicControl {
         v1 = json.getDouble("v1", 0.0);
         u2 = json.getDouble("u2", 1.0);
         v2 = json.getDouble("v2", 1.0);
-        texture = new Identifier(json.getString("resourceLocation", ""));
+        texture = Identifier.parse(json.getString("resourceLocation", ""));
     }
 
     @Override

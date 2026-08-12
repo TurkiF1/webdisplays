@@ -264,7 +264,7 @@
 //
 //        register("ClearRedstone", (cb, tes, side, args) -> {
 //            if(tes.hasUpgrade(side, DefaultUpgrade.REDOUTPUT)) {
-//                if(tes.getScreen(side).owner.uuid.equals(mc.player.getGameProfile().getId()))
+//                if(tes.getScreen(side).owner.uuid.equals(mc.player.getGameProfile().id()))
 //                    makeServerQuery(tes, side, cb, JSServerRequest.CLEAR_REDSTONE);
 //                else
 //                    cb.success("{\"status\":\"notOwner\"}");
@@ -283,7 +283,7 @@
 //                return;
 //            }
 //
-//            if(!tes.getScreen(side).owner.uuid.equals(mc.player.getGameProfile().getId())) {
+//            if(!tes.getScreen(side).owner.uuid.equals(mc.player.getGameProfile().id())) {
 //                cb.success("{\"status\":\"notOwner\"}");
 //                return;
 //            }
@@ -359,7 +359,7 @@
 //        });
 //
 //        register("IsOwner", (cb, tes, side, args) -> {
-//            boolean res = (tes.getScreen(side).owner != null && tes.getScreen(side).owner.uuid.equals(mc.player.getGameProfile().getId()));
+//            boolean res = (tes.getScreen(side).owner != null && tes.getScreen(side).owner.uuid.equals(mc.player.getGameProfile().id()));
 //            cb.success("{\"isOwner\":" + (res ? "true}" : "false}"));
 //        });
 //
