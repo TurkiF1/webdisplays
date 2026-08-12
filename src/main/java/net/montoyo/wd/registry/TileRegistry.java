@@ -13,20 +13,18 @@ public class TileRegistry {
 
     //Register tile entities
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ScreenBlockEntity>> SCREEN_BLOCK_ENTITY = TILE_TYPES
-            .register("screen", () -> BlockEntityType.Builder
-                    .of(ScreenBlockEntity::new, BlockRegistry.SCREEN_BLOCk.get()).build(null));
+            .register("screen", () -> BlockEntityType.create(ScreenBlockEntity::new, BlockRegistry.SCREEN_BLOCk.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> KEYBOARD = TILE_TYPES.register("kb_left", () -> BlockEntityType.Builder
-            .of(KeyboardBlockEntity::new, BlockRegistry.KEYBOARD_BLOCK.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> KEYBOARD = TILE_TYPES.register("kb_left", () -> BlockEntityType.create(KeyboardBlockEntity::new, BlockRegistry.KEYBOARD_BLOCK.get()));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> REMOTE_CONTROLLER = TILE_TYPES.register("rctrl",
-            () -> BlockEntityType.Builder.of(RemoteControlBlockEntity::new, BlockRegistry.REMOTE_CONTROLLER_BLOCK.get()).build(null));         //WITHOUT FACING (>= 3)
+            () -> BlockEntityType.create(RemoteControlBlockEntity::new, BlockRegistry.REMOTE_CONTROLLER_BLOCK.get()));         //WITHOUT FACING (>= 3)
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> REDSTONE_CONTROLLER = TILE_TYPES.register("redctrl",
-            () -> BlockEntityType.Builder.of(RedstoneControlBlockEntity::new, BlockRegistry.REDSTONE_CONTROL_BLOCK.get()).build(null));
+            () -> BlockEntityType.create(RedstoneControlBlockEntity::new, BlockRegistry.REDSTONE_CONTROL_BLOCK.get()));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> SERVER = TILE_TYPES.register("server",
-            () -> BlockEntityType.Builder.of(ServerBlockEntity::new, BlockRegistry.SERVER_BLOCK.get()).build(null));
+            () -> BlockEntityType.create(ServerBlockEntity::new, BlockRegistry.SERVER_BLOCK.get()));
 
     public static void init(IEventBus bus) {
         TILE_TYPES.register(bus);

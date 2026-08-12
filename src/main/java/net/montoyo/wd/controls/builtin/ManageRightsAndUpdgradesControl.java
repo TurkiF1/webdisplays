@@ -81,7 +81,7 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 
 	private static ItemStack readSimpleStack(FriendlyByteBuf buf) {
 		if (!buf.readBoolean()) return ItemStack.EMPTY;
-		return new ItemStack(BuiltInRegistries.ITEM.get(Identifier.parse(buf.readUtf())), buf.readVarInt());
+		return new ItemStack(BuiltInRegistries.ITEM.get(Identifier.parse(buf.readUtf())).orElseThrow().value(), buf.readVarInt());
 	}
 
 	private static void writeSimpleStack(FriendlyByteBuf buf, ItemStack stack) {

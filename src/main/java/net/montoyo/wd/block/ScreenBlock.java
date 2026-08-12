@@ -60,8 +60,8 @@ public class ScreenBlock extends BaseEntityBlock {
         return CODEC;
     }
 
-    @Override
-    public void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
+    /* Kept as a helper while 1.21.11's removal callback is migrated. */
+    public void onLegacyRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
         // TODO: make this also get called on client?
         if (p_60518_.getBlock() == p_60515_.getBlock()) return;
 
@@ -78,11 +78,9 @@ public class ScreenBlock extends BaseEntityBlock {
             }
         }
 
-        super.onRemove(p_60515_, p_60516_, p_60517_, p_60518_, p_60519_);
     }
 
-    @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos position, Player player, InteractionHand hand, BlockHitResult hit) {
+    private InteractionResult useLegacy(BlockState state, Level world, BlockPos position, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
         boolean isUpgrade = false;
         if (heldItem.isEmpty())
@@ -190,7 +188,7 @@ public class ScreenBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos source,
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, @org.jetbrains.annotations.Nullable net.minecraft.world.level.redstone.Orientation source,
                                 boolean isMoving) {
         if (block != this && !world.isClientSide() && !state.getValue(emitting)) {
             for (BlockSide side : BlockSide.values()) {
@@ -205,6 +203,16 @@ public class ScreenBlock extends BaseEntityBlock {
                 }
             }
         }
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos position, Player player, BlockHitResult hit) {
+        return useLegacy(state, world, position, player, InteractionHand.MAIN_HAND, hit);
+    }
+
+    @Override
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos position, Player player, InteractionHand hand, BlockHitResult hit) {
+        return useLegacy(state, world, position, player, hand, hit);
     }
     
     public static boolean hit2pixels(BlockSide side, BlockPos bpos, Vector3i pos, ScreenData scr, float hitX, float hitY, float hitZ, Vector2i dst) {
@@ -286,10 +294,10 @@ public class ScreenBlock extends BaseEntityBlock {
     }
 
     @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player,
+    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, ItemStack tool,
                                        boolean willHarvest, FluidState fluid) {
         onDestroy(level, pos, player);
-        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+        return super.onDestroyedByPlayer(state, level, pos, player, tool, willHarvest, fluid);
     }
 
     @Override
