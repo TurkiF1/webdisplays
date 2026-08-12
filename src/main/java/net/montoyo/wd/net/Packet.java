@@ -1,7 +1,6 @@
 package net.montoyo.wd.net;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.network.PacketDistributor;
@@ -47,19 +46,17 @@ public class Packet {
 		}));
 	}
 	
-	public static void onTick(TickEvent.RenderTickEvent event) {
-		if (event.phase.equals(TickEvent.Phase.END)) {
-			if (!runLater.isEmpty()) {
-				if (DistSafety.isConnected()) {
-					for (Runnable runnable : runLater) runnable.run();
-					runLater.clear();
-				}
+	public static void onTick(TickEvent.RenderTickEvent.Post event) {
+		if (!runLater.isEmpty()) {
+			if (DistSafety.isConnected()) {
+				for (Runnable runnable : runLater) runnable.run();
+				runLater.clear();
 			}
 		}
 	}
 	
 	static {
-		MinecraftForge.EVENT_BUS.addListener(Packet::onTick);
+		TickEvent.RenderTickEvent.Post.BUS.addListener(Packet::onTick);
 	}
 	
 }
