@@ -37,6 +37,8 @@ jobs:
           grep -Fq 'new S2CMessageAddScreen(this, scr)' src/main/java/net/montoyo/wd/entity/ScreenBlockEntity.java
           grep -Fq 'ClientboundBlockEntityDataPacket.create(this)' src/main/java/net/montoyo/wd/entity/ScreenBlockEntity.java
           grep -Fq 'level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS)' src/main/java/net/montoyo/wd/entity/ScreenBlockEntity.java
+          grep -Fq 'collector.submitCustomGeometry' src/main/java/net/montoyo/wd/client/renderers/ScreenRenderer.java
+          grep -Fq 'browser.getTextureIdentifier()' src/main/java/net/montoyo/wd/client/renderers/ScreenRenderer.java
       - name: Smoke-test NeoForge server startup
         run: |
           mkdir -p run-server
