@@ -75,7 +75,16 @@ public class GuiSetURL2 extends WDScreen {
 	public void init() {
 		super.init();
 		loadFrom(Identifier.fromNamespaceAndPath("webdisplays", "gui/seturl.json"));
-		tfURL.setText(screenURL);
+
+		// The built-in landing page is an implementation detail, not a useful URL
+		// for players to edit. Starting with an empty, focused field also prevents
+		// typed addresses from being appended to mod://webdisplays/main.html.
+		if (screenURL == null || screenURL.startsWith("mod://webdisplays/"))
+			tfURL.clear();
+		else
+			tfURL.setText(screenURL);
+
+		tfURL.focusAndSelectAll();
 	}
 	
 	@Override
