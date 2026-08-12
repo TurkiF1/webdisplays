@@ -15,7 +15,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.montoyo.wd.WebDisplays;
@@ -46,8 +46,8 @@ import static net.montoyo.wd.client.gui.GuiMinePad.getChar;
 
 public class GuiServer extends WDScreen {
 	
-	private static final ResourceLocation BG_IMAGE = new ResourceLocation("webdisplays", "textures/gui/server_bg.png");
-	private static final ResourceLocation FG_IMAGE = new ResourceLocation("webdisplays", "textures/gui/server_fg.png");
+	private static final Identifier BG_IMAGE = new Identifier("webdisplays", "textures/gui/server_bg.png");
+	private static final Identifier FG_IMAGE = new Identifier("webdisplays", "textures/gui/server_fg.png");
 	private static final HashMap<String, Method> COMMAND_MAP = new HashMap<>();
 	private static final int MAX_LINE_LEN = 32;
 	private static final int MAX_LINES = 12;

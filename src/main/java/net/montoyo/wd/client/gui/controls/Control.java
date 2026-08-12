@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.client.gui.WDScreen;
@@ -169,7 +169,7 @@ public abstract class Control {
             RenderSystem.disableBlend();
     }
 
-    public void bindTexture(ResourceLocation resLoc) {
+    public void bindTexture(Identifier resLoc) {
         if(resLoc == null)
             RenderSystem.setShaderTexture(0, 0); //Damn state manager
         else

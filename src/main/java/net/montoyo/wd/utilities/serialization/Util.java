@@ -9,7 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 
 import java.lang.reflect.Field;
@@ -43,7 +43,7 @@ public abstract class Util {
             bb.writeInt(ray.length);
             for (Object o : ray)
                 serialize(bb, o);
-        } else if (cls == ResourceLocation.class) {
+        } else if (cls == Identifier.class) {
             bb.writeUtf(f.toString());
         } else if (!cls.isPrimitive()) {
             Field[] fields = cls.getFields();
@@ -84,8 +84,8 @@ public abstract class Util {
                 ray[i] = unserialize(bb, cls.getComponentType());
 
             return Arrays.copyOf(ray, ray.length, cls);
-        } else if (cls == ResourceLocation.class) {
-            return new ResourceLocation(bb.readUtf());
+        } else if (cls == Identifier.class) {
+            return new Identifier(bb.readUtf());
         } else if (!cls.isPrimitive()) {
             Object ret;
             Field[] fields = cls.getFields();

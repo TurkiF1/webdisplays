@@ -204,7 +204,7 @@ public class ScreenBlockEntity extends BlockEntity {
             ret.setupRedstoneStatus(level, getBlockPos());
 
             if (sendUpdate)
-                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), new S2CMessageAddScreen(this, ret));
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(level, getBlockPos())), new S2CMessageAddScreen(this, ret));
         }
 
         screens.add(ret);
@@ -280,7 +280,7 @@ public class ScreenBlockEntity extends BlockEntity {
             if (scr.browser != null)
                 scr.browser.loadURL(weburl);
         } else {
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.setURL(this, side, weburl));
+            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(level, getBlockPos())), S2CMessageScreenUpdate.setURL(this, side, weburl));
             setChanged();
         }
     }
@@ -306,7 +306,7 @@ public class ScreenBlockEntity extends BlockEntity {
                 screens.get(idx).browser = null;
             }
         } else
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), new S2CMessageScreenUpdate(this.getBlockPos(), side)); //Delete the screen
+            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(level, getBlockPos())), new S2CMessageScreenUpdate(this.getBlockPos(), side)); //Delete the screen
 
         screens.remove(idx);
 
@@ -341,7 +341,7 @@ public class ScreenBlockEntity extends BlockEntity {
                 scr.browser = null; //Will be re-created by renderer
             }
         } else {
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.setResolution(this, side, res));
+            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(level, getBlockPos())), S2CMessageScreenUpdate.setResolution(this, side, res));
             setChanged();
         }
     }
@@ -377,7 +377,7 @@ public class ScreenBlockEntity extends BlockEntity {
         if (level.isClientSide)
             Log.warning("TileEntityScreen.click() from client side is useless...");
         else if (getLaserUser(scr) == null)
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.CLICK, vec));
+            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.CLICK, vec));
     }
 
     public void handleMouseEvent(BlockSide side, ClickControl.ControlType event, @Nullable Vector2i vec, int button) {
@@ -440,7 +440,7 @@ public class ScreenBlockEntity extends BlockEntity {
 //			}
 //
 ////            if (sendMsg)
-////                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.jsRedstone(this, side, vec, redstoneLevel));
+////                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(level, getBlockPos())), S2CMessageScreenUpdate.jsRedstone(this, side, vec, redstoneLevel));
 //		}
 //	}
 //
@@ -453,18 +453,18 @@ public class ScreenBlockEntity extends BlockEntity {
 //		Screen scr = getScreen(side);
 //		if (scr == null) {
 //			Log.error("Called handleJSRequest on non-existing side %s", side.toString());
-//			WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(() -> src), new S2CMessageJSResponse(reqId, req, 403, "Invalid side"));
+//			WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(src), new S2CMessageJSResponse(reqId, req, 403, "Invalid side"));
 //			return;
 //		}
 //
 //		if (!scr.owner.uuid.equals(src.getGameProfile().getId())) {
 //			Log.warning("Player %s (UUID %s) tries to use the redstone output API on a screen he doesn't own!", src.getName(), src.getGameProfile().getId().toString());
-//			WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(() -> src), new S2CMessageJSResponse(reqId, req, 403, "Only the owner can do that"));
+//			WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(src), new S2CMessageJSResponse(reqId, req, 403, "Only the owner can do that"));
 //			return;
 //		}
 //
 //		if (scr.upgrades.stream().noneMatch(DefaultUpgrade.REDOUTPUT::matchesRedInput)) {
-//			WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(() -> src), new S2CMessageJSResponse(reqId, req, 403, "Missing upgrade"));
+//			WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(src), new S2CMessageJSResponse(reqId, req, 403, "Missing upgrade"));
 //			return;
 //		}
 //
@@ -489,14 +489,14 @@ public class ScreenBlockEntity extends BlockEntity {
 //				vec1.add(side.up.x, side.up.y, side.up.z);
 //			}
 //
-//			WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(() -> src), new S2CMessageJSResponse(reqId, req, new byte[0]));
+//			WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(src), new S2CMessageJSResponse(reqId, req, new byte[0]));
 //		} else if (req == JSServerRequest.SET_REDSTONE_AT) {
 //			int x = (Integer) data[0];
 //			int y = (Integer) data[1];
 //			boolean state = (Boolean) data[2];
 //
 //			if (x < 0 || x >= scr.size.x || y < 0 || y >= scr.size.y)
-//				WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(() -> src), new S2CMessageJSResponse(reqId, req, 403, "Out of range"));
+//				WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(src), new S2CMessageJSResponse(reqId, req, 403, "Out of range"));
 //			else {
 //				BlockPos bp = (new Vector3i(getBlockPos())).addMul(side.right, x).addMul(side.up, y).toBlock();
 //				BlockState bs = level.getBlockState(bp);
@@ -504,10 +504,10 @@ public class ScreenBlockEntity extends BlockEntity {
 //				if (!bs.getValue(BlockScreen.emitting).equals(state))
 //					level.setBlockAndUpdate(bp, bs.setValue(BlockScreen.emitting, state));
 //
-//				WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(() -> src), new S2CMessageJSResponse(reqId, req, new byte[0]));
+//				WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(src), new S2CMessageJSResponse(reqId, req, new byte[0]));
 //			}
 //		} else
-//			WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(() -> src), new S2CMessageJSResponse(reqId, req, 400, "Invalid request"));
+//			WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(src), new S2CMessageJSResponse(reqId, req, 400, "Invalid request"));
 //	}
 
     @Override
@@ -831,7 +831,7 @@ public class ScreenBlockEntity extends BlockEntity {
 
         scr.upgrades.add(isCopy);
         if (player != null && !player.level().isClientSide) {
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.upgrade(this, side, true, is));
+            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(level, getBlockPos())), S2CMessageScreenUpdate.upgrade(this, side, true, is));
             itemAsUpgrade.onInstall(this, side, player, isCopy);
             playSoundAt(WebDisplays.INSTANCE.soundUpgradeAdd, getBlockPos(), 1.0f, 1.0f);
         }
@@ -895,7 +895,7 @@ public class ScreenBlockEntity extends BlockEntity {
             dropUpgrade(scr.upgrades.get(idxToRemove), side, player);
             scr.upgrades.remove(idxToRemove);
             if (player != null && !player.level().isClientSide) {
-                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.upgrade(this, side, false, is));
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(level, getBlockPos())), S2CMessageScreenUpdate.upgrade(this, side, false, is));
                 playSoundAt(WebDisplays.INSTANCE.soundUpgradeDel, getBlockPos(), 1.0f, 1.0f);
             }
             setChanged();
@@ -949,11 +949,11 @@ public class ScreenBlockEntity extends BlockEntity {
 
         if (scr != null) {
             if (button == -1)
-                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.MOVE, pos));
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.MOVE, pos));
             else if (down)
-                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.DOWN, pos));
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.DOWN, pos));
             else
-                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.UP, pos));
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.UP, pos));
         }
     }
 
@@ -963,7 +963,7 @@ public class ScreenBlockEntity extends BlockEntity {
         if (scr != null) {
             if (getLaserUser(scr) == ply) {
                 scr.laserUser = null;
-                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.UP, null));
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.UP, null));
             }
         }
     }
@@ -974,7 +974,7 @@ public class ScreenBlockEntity extends BlockEntity {
             scr.upgrades.clear();
         }
 
-        WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.turnOff(getBlockPos(), null));
+        WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(level, getBlockPos())), S2CMessageScreenUpdate.turnOff(getBlockPos(), null));
     }
 
     public void disableScreen(BlockSide side) {
@@ -1017,7 +1017,7 @@ public class ScreenBlockEntity extends BlockEntity {
         }
 
         scr.owner = new NameUUIDPair(newOwner.getGameProfile());
-        WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.owner(this, side, scr.owner));
+        WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(level, getBlockPos())), S2CMessageScreenUpdate.owner(this, side, scr.owner));
         checkLaserUserRights(scr);
         setChanged();
     }
@@ -1041,7 +1041,7 @@ public class ScreenBlockEntity extends BlockEntity {
             }
         } else {
             scr.rotation = rot;
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.rotation(this, side, rot));
+            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(level, getBlockPos())), S2CMessageScreenUpdate.rotation(this, side, rot));
             setChanged();
         }
     }
@@ -1057,7 +1057,7 @@ public class ScreenBlockEntity extends BlockEntity {
 //			if (scr.browser != null)
 //				scr.browser.runJS(code, "");
 //		}
-////        else WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.js(this, side, code));
+////        else WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(level, getBlockPos())), S2CMessageScreenUpdate.js(this, side, code));
 //	}
 
     public void setAutoVolume(BlockSide side, boolean av) {
@@ -1072,7 +1072,7 @@ public class ScreenBlockEntity extends BlockEntity {
         if (level.isClientSide)
             WebDisplays.PROXY.screenUpdateAutoVolumeInGui(new Vector3i(getBlockPos()), side, av);
         else {
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.autoVolume(this, side, av));
+            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(level, getBlockPos())), S2CMessageScreenUpdate.autoVolume(this, side, av));
             setChanged();
         }
     }

@@ -1,17 +1,15 @@
 package net.montoyo.wd.net;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.PacketListener;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.network.PacketDistributor;
 import net.montoyo.wd.utilities.DistSafety;
 
 import java.util.ArrayList;
-import java.util.function.Supplier;
 
-public class Packet implements net.minecraft.network.protocol.Packet {
+public class Packet {
 	public Packet() {
 	}
 	
@@ -22,36 +20,29 @@ public class Packet implements net.minecraft.network.protocol.Packet {
 	public void write(FriendlyByteBuf buf) {
 	}
 	
-	public void handle(NetworkEvent.Context ctx) {
+	public void handle(CustomPayloadEvent.Context ctx) {
 	}
 	
-	public final void handle(PacketListener pHandler) {
+	public boolean checkClient(CustomPayloadEvent.Context ctx) {
+		return ctx.isClientSide();
 	}
 	
-	public boolean isSkippable() {
-		return net.minecraft.network.protocol.Packet.super.isSkippable();
+	public boolean checkServer(CustomPayloadEvent.Context ctx) {
+		return ctx.isServerSide();
 	}
 	
-	public boolean checkClient(NetworkEvent.Context ctx) {
-		return ctx.getDirection().getReceptionSide().isClient();
-	}
-	
-	public boolean checkServer(NetworkEvent.Context ctx) {
-		return ctx.getDirection().getReceptionSide().isServer();
-	}
-	
-	public void respond(NetworkEvent.Context ctx, Packet packet) {
+	public void respond(CustomPayloadEvent.Context ctx, Packet packet) {
 		ctx.enqueueWork(() -> WDNetworkRegistry.INSTANCE.reply(packet, ctx));
 	}
 	
 	private static final ArrayList<Runnable> runLater = new ArrayList<>();
 	
-	public void respondLater(NetworkEvent.Context ctx, Packet packet) {
+	public void respondLater(CustomPayloadEvent.Context ctx, Packet packet) {
 		ctx.enqueueWork(() -> runLater.add(() -> {
 			if (checkClient(ctx))
 				WDNetworkRegistry.INSTANCE.sendToServer(packet);
 			else if (ctx.getSender() != null)
-				WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(ctx::getSender), packet);
+					WDNetworkRegistry.INSTANCE.send(packet, PacketDistributor.PLAYER.with(ctx.getSender()));
 			else WDNetworkRegistry.INSTANCE.reply(packet, ctx);
 		}));
 	}
@@ -71,6 +62,4 @@ public class Packet implements net.minecraft.network.protocol.Packet {
 		MinecraftForge.EVENT_BUS.addListener(Packet::onTick);
 	}
 	
-	public final void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-	}
 }

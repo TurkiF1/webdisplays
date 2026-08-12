@@ -8,14 +8,14 @@ import com.cinemamod.mcef.MCEF;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.montoyo.wd.core.HasAdvancement;
 import net.montoyo.wd.core.JSServerRequest;
@@ -52,7 +52,7 @@ public class SharedProxy {
         return getServer().getLevel(dim);
     }
 
-    public BlockGetter getWorld(NetworkEvent.Context context) {
+    public BlockGetter getWorld(CustomPayloadEvent.Context context) {
         if (context.getSender() != null) return context.getSender().level();
         return null;
     }
@@ -101,7 +101,7 @@ public class SharedProxy {
     }
 
     @Nonnull
-    public HasAdvancement hasClientPlayerAdvancement(@Nonnull ResourceLocation rl) {
+    public HasAdvancement hasClientPlayerAdvancement(@Nonnull Identifier rl) {
         return HasAdvancement.DONT_KNOW;
     }
 

@@ -82,7 +82,7 @@ public class ScreenConfigData extends GuiData {
 	}
 	
 	public void sendTo(PacketDistributor.TargetPoint tp) {
-		WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> tp), new S2CMessageOpenGui(this));
+		WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(tp), new S2CMessageOpenGui(this));
 	}
 	
 	@Override

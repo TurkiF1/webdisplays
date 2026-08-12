@@ -10,7 +10,7 @@ import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.DeserializationContext;
 import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.PlayerAdvancements;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,21 +21,21 @@ import java.util.HashMap;
 
 public class Criterion implements CriterionTrigger<Criterion.Instance> {
     public static class Instance extends AbstractCriterionTriggerInstance {
-        public Instance(ResourceLocation id, ContextAwarePredicate arg2) {
+        public Instance(Identifier id, ContextAwarePredicate arg2) {
             super(id, arg2);
         }
     }
 
-    private final ResourceLocation id;
+    private final Identifier id;
     private final HashMap<PlayerAdvancements, ArrayList<Listener<Instance>>> map = new HashMap<>();
 
     public Criterion(@Nonnull String name) {
-        id = new ResourceLocation("webdisplays", name);
+        id = new Identifier("webdisplays", name);
     }
 
     @Override
     @Nonnull
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
 

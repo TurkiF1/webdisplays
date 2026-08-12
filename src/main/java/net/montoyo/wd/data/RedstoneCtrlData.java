@@ -7,7 +7,7 @@ package net.montoyo.wd.data;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -16,7 +16,7 @@ import net.montoyo.wd.net.BufferUtils;
 import net.montoyo.wd.utilities.math.Vector3i;
 
 public class RedstoneCtrlData extends GuiData {
-    public ResourceLocation dimension;
+    public Identifier dimension;
     public Vector3i pos;
     public String risingEdgeURL;
     public String fallingEdgeURL;
@@ -25,7 +25,7 @@ public class RedstoneCtrlData extends GuiData {
         super();
     }
 
-    public RedstoneCtrlData(ResourceLocation d, BlockPos p, String r, String f) {
+    public RedstoneCtrlData(Identifier d, BlockPos p, String r, String f) {
         dimension = d;
         pos = new Vector3i(p);
         risingEdgeURL = r;
@@ -53,7 +53,7 @@ public class RedstoneCtrlData extends GuiData {
 
     @Override
     public void deserialize(FriendlyByteBuf buf) {
-        dimension = new ResourceLocation(buf.readUtf());
+        dimension = new Identifier(buf.readUtf());
         pos = BufferUtils.readVec3i(buf);
         risingEdgeURL = buf.readUtf();
         fallingEdgeURL = buf.readUtf();

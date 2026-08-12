@@ -2,10 +2,10 @@ package net.montoyo.wd.controls.builtin;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.core.MissingPermissionException;
 import net.montoyo.wd.core.ScreenRights;
@@ -17,7 +17,7 @@ import net.montoyo.wd.utilities.math.Vector2i;
 import java.util.function.Function;
 
 public class ScreenModifyControl extends ScreenControl {
-	public static final ResourceLocation id = new ResourceLocation("webdisplays:mod_screen");
+	public static final Identifier id = new Identifier("webdisplays:mod_screen");
 	
 	public enum ControlType {
 		RESOLUTION, ROTATION
@@ -55,7 +55,7 @@ public class ScreenModifyControl extends ScreenControl {
 	}
 	
 	@Override
-	public void handleServer(BlockPos pos, BlockSide side, ScreenBlockEntity tes, NetworkEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
+	public void handleServer(BlockPos pos, BlockSide side, ScreenBlockEntity tes, CustomPayloadEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
 		checkPerms(ScreenRights.MODIFY_SCREEN, permissionChecker, ctx.getSender());
 		switch (type) {
 			case RESOLUTION -> tes.setResolution(side, res);
@@ -65,7 +65,7 @@ public class ScreenModifyControl extends ScreenControl {
 	
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void handleClient(BlockPos pos, BlockSide side, ScreenBlockEntity tes, NetworkEvent.Context ctx) {
+	public void handleClient(BlockPos pos, BlockSide side, ScreenBlockEntity tes, CustomPayloadEvent.Context ctx) {
 		switch (type) {
 			case RESOLUTION -> tes.setResolution(side, res);
 			case ROTATION -> tes.setRotation(side, rotation);

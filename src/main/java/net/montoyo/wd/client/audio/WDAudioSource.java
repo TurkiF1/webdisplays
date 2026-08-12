@@ -6,7 +6,7 @@ import net.minecraft.client.sounds.AudioStream;
 import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.client.sounds.WeighedSoundEvents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.SampledFloat;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public class WDAudioSource implements SoundInstance {
-    private static final ResourceLocation location = new ResourceLocation("webdisplays:audio_source");
+    private static final Identifier location = new Identifier("webdisplays:audio_source");
     private static final WeighedSoundEvents events = new WeighedSoundEvents(
             location, "webdisplays.browser"
     );
@@ -44,7 +44,7 @@ public class WDAudioSource implements SoundInstance {
     }
 
     @Override
-    public ResourceLocation getLocation() {
+    public Identifier getLocation() {
         return location;
     }
 

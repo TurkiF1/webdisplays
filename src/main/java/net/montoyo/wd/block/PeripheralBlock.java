@@ -120,7 +120,7 @@ public class PeripheralBlock extends WDContainerBlock {
     @Override
     public void playerDestroy(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
         if (!world.isClientSide) {
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(world, pos)), new S2CMessageCloseGui(pos));
+            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(world, pos)), new S2CMessageCloseGui(pos));
         }
         super.playerDestroy(world, player, pos, state, blockEntity, tool);
     }

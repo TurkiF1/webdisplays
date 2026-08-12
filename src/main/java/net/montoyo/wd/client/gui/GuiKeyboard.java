@@ -10,7 +10,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -116,7 +116,7 @@ public class GuiKeyboard extends WDScreen {
         else
             showWarning = !hasUserReadWarning();
 
-        loadFrom(new ResourceLocation("webdisplays", "gui/kb_right.json"));
+        loadFrom(new Identifier("webdisplays", "gui/kb_right.json"));
 
         if (showWarning) {
             int maxLabelW = 0;

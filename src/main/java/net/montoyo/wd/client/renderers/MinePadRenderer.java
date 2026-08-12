@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +29,7 @@ import static com.mojang.math.Axis.*;
 public final class MinePadRenderer implements IItemRenderer {
 	private static final float PI = (float) Math.PI;
 	private final Minecraft mc = Minecraft.getInstance();
-	private final ResourceLocation tex = new ResourceLocation("webdisplays", "textures/item/model/minepad.png");
+	private final Identifier tex = new Identifier("webdisplays", "textures/item/model/minepad.png");
 	private final ModelMinePad model = new ModelMinePad();
 	private final ClientProxy clientProxy = (ClientProxy) WebDisplays.PROXY;
 	

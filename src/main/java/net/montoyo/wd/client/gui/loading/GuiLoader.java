@@ -7,7 +7,7 @@ package net.montoyo.wd.client.gui.loading;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.montoyo.wd.client.gui.controls.*;
 import net.montoyo.wd.utilities.Log;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 public class GuiLoader {
 
     private static final HashMap<String, Class<? extends Control>> CONTROLS = new HashMap<>();
-    private static final HashMap<ResourceLocation, JsonObject> RESOURCES = new HashMap<>();
+    private static final HashMap<Identifier, JsonObject> RESOURCES = new HashMap<>();
 
     public static void register(Class<? extends Control> cls) {
         if(Modifier.isAbstract(cls.getModifiers()))
@@ -62,7 +62,7 @@ public class GuiLoader {
         return ret;
     }
 
-    public static JsonObject getJson(ResourceLocation resLoc) throws IOException {
+    public static JsonObject getJson(Identifier resLoc) throws IOException {
         JsonObject ret = RESOURCES.get(resLoc);
         if(ret == null) {
             Resource resource;

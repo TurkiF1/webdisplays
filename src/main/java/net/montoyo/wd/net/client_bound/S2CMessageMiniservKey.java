@@ -5,7 +5,7 @@
 package net.montoyo.wd.net.client_bound;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.miniserv.client.Client;
@@ -31,7 +31,7 @@ public class S2CMessageMiniservKey extends Packet {
 	}
 	
 	@Override
-	public void handle(NetworkEvent.Context ctx) {
+	public void handle(CustomPayloadEvent.Context ctx) {
 		if (checkClient(ctx)) {
 			if (Client.getInstance().decryptKey(encryptedKey)) {
 				Log.info("Successfully received and decrypted key, starting miniserv client...");

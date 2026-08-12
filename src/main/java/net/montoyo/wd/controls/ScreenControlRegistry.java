@@ -2,11 +2,11 @@ package net.montoyo.wd.controls;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.controls.builtin.*;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.utilities.data.BlockSide;
@@ -17,9 +17,9 @@ import java.util.HashMap;
 
 // TODO: enable deferred registry of these
 public class ScreenControlRegistry {
-	private static final HashMap<ResourceLocation, ScreenControlType<?>> CONTROL_TYPES = new HashMap<>();
+	private static final HashMap<Identifier, ScreenControlType<?>> CONTROL_TYPES = new HashMap<>();
 	
-	public static void register(ResourceLocation name, ScreenControlType<?> type) {
+	public static void register(Identifier name, ScreenControlType<?> type) {
 		if (CONTROL_TYPES.containsKey(name)) {
 			Log.warning("ScreenControlRegistry#CONTROL_TYPES already contains an entry with name " + name);
 			throw new IllegalArgumentException("Cannot have two entries with the same name.");
@@ -32,7 +32,7 @@ public class ScreenControlRegistry {
 			if (FMLEnvironment.dist.isClient()) {
 				boolean shouldThrow = false;
 				try {
-					Method m = type.clazz.getMethod("handleClient", BlockPos.class, BlockSide.class, ScreenBlockEntity.class, NetworkEvent.Context.class);
+					Method m = type.clazz.getMethod("handleClient", BlockPos.class, BlockSide.class, ScreenBlockEntity.class, CustomPayloadEvent.Context.class);
 					OnlyIn onlyIn = m.getAnnotation(OnlyIn.class);
 					if (onlyIn == null) shouldThrow = true;
 					Dist d = onlyIn.value(); // idc if this throws, lol
@@ -67,7 +67,7 @@ public class ScreenControlRegistry {
 	}
 	
 	public static ScreenControl parse(FriendlyByteBuf buf) {
-		return CONTROL_TYPES.get(new ResourceLocation(buf.readUtf()))
+		return CONTROL_TYPES.get(new Identifier(buf.readUtf()))
 				.deserializer.apply(buf);
 	}
 	

@@ -7,7 +7,7 @@ package net.montoyo.wd.client.gui.controls;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
@@ -20,7 +20,7 @@ public class Icon extends BasicControl {
     protected double v1;
     protected double u2;
     protected double v2;
-    protected ResourceLocation texture;
+    protected Identifier texture;
 
     @Override
     public int getWidth() {
@@ -42,7 +42,7 @@ public class Icon extends BasicControl {
         v1 = json.getDouble("v1", 0.0);
         u2 = json.getDouble("u2", 1.0);
         v2 = json.getDouble("v2", 1.0);
-        texture = new ResourceLocation(json.getString("resourceLocation", ""));
+        texture = new Identifier(json.getString("resourceLocation", ""));
     }
 
     @Override
@@ -75,7 +75,7 @@ public class Icon extends BasicControl {
         this.v2 = v2;
     }
 
-    public void setTexture(ResourceLocation texture) {
+    public void setTexture(Identifier texture) {
         this.texture = texture;
     }
 

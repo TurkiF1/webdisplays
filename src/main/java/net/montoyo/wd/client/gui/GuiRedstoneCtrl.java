@@ -6,7 +6,7 @@ package net.montoyo.wd.client.gui;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.montoyo.wd.client.gui.controls.Button;
 import net.montoyo.wd.client.gui.controls.TextField;
 import net.montoyo.wd.client.gui.loading.FillControl;
@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 
 public class GuiRedstoneCtrl extends WDScreen {
 
-    private ResourceLocation dimension;
+    private Identifier dimension;
     private Vector3i pos;
     private String risingEdgeURL;
     private String fallingEdgeURL;
@@ -31,7 +31,7 @@ public class GuiRedstoneCtrl extends WDScreen {
     @FillControl
     private Button btnOk;
 
-    public GuiRedstoneCtrl(Component component, ResourceLocation d, Vector3i p, String r, String f) {
+    public GuiRedstoneCtrl(Component component, Identifier d, Vector3i p, String r, String f) {
         super(component);
         dimension = d;
         pos = p;
@@ -42,7 +42,7 @@ public class GuiRedstoneCtrl extends WDScreen {
     @Override
     public void init() {
         super.init();
-        loadFrom(new ResourceLocation("webdisplays", "gui/redstonectrl.json"));
+        loadFrom(new Identifier("webdisplays", "gui/redstonectrl.json"));
         tfRisingEdge.setText(risingEdgeURL);
         tfFallingEdge.setText(fallingEdgeURL);
     }

@@ -25,7 +25,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -53,11 +53,11 @@ import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.SharedProxy;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.ScreenBlock;
@@ -136,7 +136,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		if (!LaserPointerRenderer.isOn()) {
 			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
-			poseStack.blit(new ResourceLocation(
+			poseStack.blit(new Identifier(
 					"webdisplays:textures/gui/cursors.png"
 			), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, 240, 240, 15, 15, 256, 256);
 			ci.cancel();
@@ -152,7 +152,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockRegistry.SCREEN_BLOCk.get()) {
 			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
-			poseStack.blit(new ResourceLocation(
+			poseStack.blit(new Identifier(
 					"webdisplays:textures/gui/cursors.png"
 			), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, 240, 240, 15, 15, 256, 256);
 			ci.cancel();
@@ -178,7 +178,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		
 		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
-		poseStack.blit(new ResourceLocation(
+		poseStack.blit(new Identifier(
 				"webdisplays:textures/gui/cursors.png"
 		), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, coordX, coordY, 15, 15, 256, 256);
 
@@ -394,7 +394,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	
 	@Override
 	@Nonnull
-	public HasAdvancement hasClientPlayerAdvancement(@Nonnull ResourceLocation rl) {
+	public HasAdvancement hasClientPlayerAdvancement(@Nonnull Identifier rl) {
 		if (advancementToProgressField != null && mc.player != null && mc.player.connection != null) {
 			ClientAdvancements cam = mc.player.connection.getAdvancements();
 			Advancement adv = cam.getAdvancements().get(rl);
@@ -726,7 +726,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	public void onWorldUnload(LevelEvent.Unload ev) {
 		Log.info("World unloaded; killing screens...");
 		if (ev.getLevel() instanceof Level level) {
-			ResourceLocation dim = level.dimension().location();
+			Identifier dim = level.dimension().location();
 			for (int i = screenTracking.size() - 1; i >= 0; i--) {
 				if (screenTracking.get(i).getLevel().dimension().location().equals(dim)) //Could be world == ev.getWorld()
 					screenTracking.remove(i).unload();
@@ -821,7 +821,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	}
 	
 	@Override
-	public BlockGetter getWorld(NetworkEvent.Context context) {
+	public BlockGetter getWorld(CustomPayloadEvent.Context context) {
 		BlockGetter senderLevel = super.getWorld(context);
 		if (senderLevel == null) return Minecraft.getInstance().level;
 		return senderLevel;
