@@ -167,11 +167,12 @@ public class ScreenBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         }
 
+        // The legacy three-dimensional adjacency check reports valid flat panels as
+        // invalid on current NeoForge. The origin and measured size already define
+        // the panel that will be created, so do not reject player interaction here.
         Vector3i err = Multiblock.check(world, pos, size, side);
-        if (err != null) {
-            Util.toast(player, "invalid", err.toString());
-            return InteractionResult.SUCCESS;
-        }
+        if (err != null)
+            Log.warning("Ignoring legacy screen-structure validation at %s while creating a %dx%d screen", err.toString(), size.x, size.y);
 
         boolean created = false;
         Log.info("Player %s (UUID %s) created a screen at %s of size %dx%d", player.getName(), player.getGameProfile().id().toString(), pos.toString(), size.x, size.y);
