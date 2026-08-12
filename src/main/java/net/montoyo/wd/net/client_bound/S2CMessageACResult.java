@@ -5,7 +5,6 @@
 package net.montoyo.wd.net.client_bound;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.net.Packet;
 import net.montoyo.wd.utilities.serialization.NameUUIDPair;
@@ -35,7 +34,7 @@ public class S2CMessageACResult extends Packet {
             pair.writeTo(buf);
     }
 
-    public void handle(CustomPayloadEvent.Context ctx) {
+    public void handle(net.montoyo.wd.net.PacketContext ctx) {
         if (checkClient(ctx)) {
             ctx.enqueueWork(() -> {
                 WebDisplays.PROXY.onAutocompleteResult(result);

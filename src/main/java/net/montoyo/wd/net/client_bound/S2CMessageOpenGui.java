@@ -5,7 +5,6 @@
 package net.montoyo.wd.net.client_bound;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.data.GuiData;
 import net.montoyo.wd.net.Packet;
@@ -36,7 +35,7 @@ public class S2CMessageOpenGui extends Packet {
 		data.serialize(buf);
 	}
 	
-	public void handle(CustomPayloadEvent.Context context) {
+	public void handle(net.montoyo.wd.net.PacketContext context) {
 		if (checkClient(context)) {
 			context.enqueueWork(() -> WebDisplays.PROXY.displayGui(data));
 			context.setPacketHandled(true);

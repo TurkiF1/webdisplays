@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.controls.ScreenControlRegistry;
@@ -160,7 +159,7 @@ public class C2SMessageScreenCtrl extends Packet {
 			throw new MissingPermissionException(right, sender);
 	}
 	
-	public void handle(CustomPayloadEvent.Context ctx) {
+	public void handle(net.montoyo.wd.net.PacketContext ctx) {
 		if (checkServer(ctx)) {
 			ctx.enqueueWork(() -> {
 				try {

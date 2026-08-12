@@ -5,7 +5,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.core.MissingPermissionException;
 import net.montoyo.wd.core.ScreenRights;
@@ -41,7 +40,7 @@ public class SetURLControl extends ScreenControl {
 	}
 	
 	@Override
-	public void handleServer(BlockPos pos, BlockSide side, ScreenBlockEntity tes, CustomPayloadEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
+	public void handleServer(BlockPos pos, BlockSide side, ScreenBlockEntity tes, net.montoyo.wd.net.PacketContext ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
 		// TODO: deal with remote
 		checkPerms(ScreenRights.CHANGE_URL, permissionChecker, ctx.getSender());
 		try {
@@ -53,7 +52,7 @@ public class SetURLControl extends ScreenControl {
 	
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void handleClient(BlockPos pos, BlockSide side, ScreenBlockEntity tes, CustomPayloadEvent.Context ctx) {
+	public void handleClient(BlockPos pos, BlockSide side, ScreenBlockEntity tes, net.montoyo.wd.net.PacketContext ctx) {
 		try {
 			tes.setScreenURL(side, url);
 		} catch (Throwable err) {

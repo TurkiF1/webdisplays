@@ -5,7 +5,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.core.MissingPermissionException;
 import net.montoyo.wd.entity.ScreenBlockEntity;
@@ -47,13 +46,13 @@ public class ClickControl extends ScreenControl {
 	}
 	
 	@Override
-	public void handleServer(BlockPos pos, BlockSide side, ScreenBlockEntity tes, CustomPayloadEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
+	public void handleServer(BlockPos pos, BlockSide side, ScreenBlockEntity tes, net.montoyo.wd.net.PacketContext ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
 		throw new RuntimeException("Cannot call click control on server");
 	}
 	
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void handleClient(BlockPos pos, BlockSide side, ScreenBlockEntity tes, CustomPayloadEvent.Context ctx) {
+	public void handleClient(BlockPos pos, BlockSide side, ScreenBlockEntity tes, net.montoyo.wd.net.PacketContext ctx) {
 		if (coord != null)
 			tes.handleMouseEvent(side, ClickControl.ControlType.MOVE, coord, -1);
 		

@@ -15,7 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.montoyo.wd.core.HasAdvancement;
 import net.montoyo.wd.core.JSServerRequest;
@@ -52,7 +51,7 @@ public class SharedProxy {
         return getServer().getLevel(dim);
     }
 
-    public BlockGetter getWorld(CustomPayloadEvent.Context context) {
+    public BlockGetter getWorld(net.montoyo.wd.net.PacketContext context) {
         if (context.getSender() != null) return context.getSender().level();
         return null;
     }

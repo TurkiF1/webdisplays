@@ -1,7 +1,8 @@
 package net.montoyo.wd.config;
 
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.config.annoconfg.AnnoCFG;
 import net.montoyo.wd.config.annoconfg.annotation.format.*;
@@ -12,9 +13,9 @@ import net.montoyo.wd.config.annoconfg.annotation.value.IntRange;
 @Config(type = ModConfig.Type.CLIENT)
 public class ClientConfig {
 	@SuppressWarnings("unused")
-	private static final AnnoCFG CFG = new AnnoCFG(FMLJavaModLoadingContext.get().getModBusGroup(), ClientConfig.class);
-	public static void init() {
-		// loads the class
+	private static AnnoCFG CFG;
+	public static void init(IEventBus bus, ModContainer modContainer) {
+		if (CFG == null) CFG = new AnnoCFG(bus, modContainer, ClientConfig.class);
 	}
 	
 	@Name("load_distance")

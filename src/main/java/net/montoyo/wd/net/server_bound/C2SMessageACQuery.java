@@ -7,7 +7,6 @@ package net.montoyo.wd.net.server_bound;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.net.Packet;
@@ -54,7 +53,7 @@ public class C2SMessageACQuery extends Packet implements Runnable {
 		WDNetworkRegistry.INSTANCE.send(new S2CMessageACResult(result), PacketDistributor.PLAYER.with(player));
 	}
 	
-	public void handle(CustomPayloadEvent.Context ctx) {
+	public void handle(net.montoyo.wd.net.PacketContext ctx) {
 		if (checkServer(ctx)) {
 			player = ctx.getSender();
 			ctx.enqueueWork(this);

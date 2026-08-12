@@ -6,7 +6,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.core.JSServerRequest;
 import net.montoyo.wd.core.MissingPermissionException;
@@ -48,7 +47,7 @@ public class JSRequestControl extends ScreenControl {
 	}
 	
 	@Override
-	public void handleServer(BlockPos pos, BlockSide side, ScreenBlockEntity tes, CustomPayloadEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
+	public void handleServer(BlockPos pos, BlockSide side, ScreenBlockEntity tes, net.montoyo.wd.net.PacketContext ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
 		ServerPlayer player = ctx.getSender();
 //		if (reqType == null || data == null) Log.warning("Caught invalid JS request from player %s (UUID %s)", player.getName(), player.getGameProfile().getId().toString());
 //		else tes.handleJSRequest(player, side, reqId, reqType, data);
@@ -56,7 +55,7 @@ public class JSRequestControl extends ScreenControl {
 	
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void handleClient(BlockPos pos, BlockSide side, ScreenBlockEntity tes, CustomPayloadEvent.Context ctx) {
+	public void handleClient(BlockPos pos, BlockSide side, ScreenBlockEntity tes, net.montoyo.wd.net.PacketContext ctx) {
 		throw new RuntimeException("TODO");
 	}
 }

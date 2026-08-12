@@ -10,7 +10,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.common.ForgeMod;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.entity.RedstoneControlBlockEntity;
 import net.montoyo.wd.entity.ScreenBlockEntity;
@@ -76,7 +75,7 @@ public class C2SMessageRedstoneCtrl extends Packet implements Runnable {
 		buf.writeUtf(fallingEdgeURL);
 	}
 	
-	public void handle(CustomPayloadEvent.Context ctx) {
+	public void handle(net.montoyo.wd.net.PacketContext ctx) {
 		if (checkServer(ctx)) {
 			player = ctx.getSender();
 			ctx.enqueueWork(this);

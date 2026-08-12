@@ -5,7 +5,6 @@
 package net.montoyo.wd.net.client_bound;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.core.JSServerRequest;
 import net.montoyo.wd.net.Packet;
@@ -79,7 +78,7 @@ public class S2CMessageJSResponse extends Packet {
         }
     }
 
-    public void handle(CustomPayloadEvent.Context ctx) {
+    public void handle(net.montoyo.wd.net.PacketContext ctx) {
         if (checkClient(ctx)) {
             ctx.enqueueWork(() -> {
                 try {

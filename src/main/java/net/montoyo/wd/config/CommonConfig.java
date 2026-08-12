@@ -1,7 +1,8 @@
 package net.montoyo.wd.config;
 
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.config.annoconfg.AnnoCFG;
 import net.montoyo.wd.config.annoconfg.annotation.format.*;
@@ -13,10 +14,10 @@ import net.montoyo.wd.config.annoconfg.annotation.value.LongRange;
 @Config(type = ModConfig.Type.COMMON)
 public class CommonConfig {
 	@SuppressWarnings("unused")
-	private static final AnnoCFG CFG = new AnnoCFG(FMLJavaModLoadingContext.get().getModBusGroup(), CommonConfig.class);
+	private static AnnoCFG CFG;
 
-	public static void init() {
-		// loads the class
+	public static void init(IEventBus bus, ModContainer modContainer) {
+		if (CFG == null) CFG = new AnnoCFG(bus, modContainer, CommonConfig.class);
 	}
 
 	@Name("hard_recipes")

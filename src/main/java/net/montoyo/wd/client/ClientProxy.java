@@ -47,15 +47,14 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
-import net.neoforged.neoforge.client.event.RenderHighlightEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.SharedProxy;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.ScreenBlock;
@@ -96,7 +95,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.*;
 
-@Mod.EventBusSubscriber(modid = "webdisplays", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientProxy extends SharedProxy implements ResourceManagerReloadListener {
 	
 	private static ClientProxy INSTANCE;
@@ -261,9 +259,9 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	public void preInit() {
 		super.preInit();
 		mc = Minecraft.getInstance();
-		MinecraftForge.EVENT_BUS.register(this);
-		TickEvent.LevelTickEvent.Post.BUS.addListener(this::onLevelTick);
-		TickEvent.ClientTickEvent.Post.BUS.addListener(this::onTick);
+		NeoForge.EVENT_BUS.register(this);
+		NeoForge.EVENT_BUS.addListener(this::onLevelTick);
+		NeoForge.EVENT_BUS.addListener(this::onTick);
 	}
 	
 	@Override
@@ -561,7 +559,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 
 	/**************************************** EVENT METHODS ****************************************/
 
-	public void onLevelTick(TickEvent.LevelTickEvent.Post ev) {
+	public void onLevelTick(LevelTickEvent.Post ev) {
 		if (!ev.side().equals(LogicalSide.CLIENT)) return;
 		
 		//Unload/load screens depending on client player distance
@@ -608,7 +606,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		}
 	}
 	
-	public void onTick(TickEvent.ClientTickEvent.Post ev) {
+	public void onTick(ClientTickEvent.Post ev) {
 		
 		//Help
 		if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_F1)) {
@@ -812,34 +810,10 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	}
 	
 	@Override
-	public BlockGetter getWorld(CustomPayloadEvent.Context context) {
+	public BlockGetter getWorld(net.montoyo.wd.net.PacketContext context) {
 		BlockGetter senderLevel = super.getWorld(context);
 		if (senderLevel == null) return Minecraft.getInstance().level;
 		return senderLevel;
-	}
-	
-	public static void onDrawSelection(RenderHighlightEvent event) {
-		if (event.getTarget() instanceof BlockHitResult bhr) {
-			BlockState state = Minecraft.getInstance().level.getBlockState(bhr.getBlockPos());
-			if (state.getBlock() instanceof ScreenBlock screen) {
-				Vector3i vec = new Vector3i(bhr.getBlockPos().getX(), bhr.getBlockPos().getY(), bhr.getBlockPos().getZ());
-				BlockSide side = BlockSide.fromInt(bhr.getDirection().ordinal());
-				Multiblock.findOrigin(
-						Minecraft.getInstance().level, vec,
-						side, null
-				);
-				
-				BlockPos pos = new BlockPos(vec.x, vec.y, vec.z);
-				BlockEntity be = Minecraft.getInstance().level.getBlockEntity(
-						pos
-				);
-				if (be instanceof ScreenBlockEntity tes) {
-					if (tes.getScreen(side) != null) {
-						event.setCanceled(true);
-					}
-				}
-			}
-		}
 	}
 	
 	/**

@@ -22,19 +22,18 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.neoforged.bus.api.BusGroup;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -105,7 +104,7 @@ public class WebDisplays {
     private boolean hasOC;
     private boolean hasCC;
 
-    public WebDisplays() {
+    public WebDisplays(IEventBus bus, ModContainer modContainer) {
         INSTANCE = this;
         if(FMLEnvironment.dist.isClient()) {
             PROXY = DistSafety.createProxy();
@@ -115,14 +114,14 @@ public class WebDisplays {
     
         if (FMLEnvironment.dist.isClient()) {
             // proxies are annoying, so from now on, I'mma be just registering stuff in here
-            FMLJavaModLoadingContext.get().getModBusGroup().addListener(ClientProxy::onKeybindRegistry);
-            MinecraftForge.EVENT_BUS.addListener(ClientProxy::onDrawSelection);
-            MinecraftForge.EVENT_BUS.addListener(KeyboardCamera::updateCamera);
-            TickEvent.ClientTickEvent.Post.BUS.addListener(KeyboardCamera::gameTick);
-            ClientConfig.init();
+            bus.addListener(ClientProxy::onKeybindRegistry);
+            bus.addListener(ClientProxy::onClientSetup);
+            NeoForge.EVENT_BUS.addListener(KeyboardCamera::updateCamera);
+            NeoForge.EVENT_BUS.addListener(KeyboardCamera::gameTick);
+            ClientConfig.init(bus, modContainer);
         }
         
-        CommonConfig.init();
+        CommonConfig.init(bus, modContainer);
         
         //Criterions
         criterionPadBreak = new Criterion("pad_break");
@@ -131,7 +130,6 @@ public class WebDisplays {
         criterionKeyboardCat = new Criterion("keyboard_cat");
         registerTrigger(criterionPadBreak, criterionUpgradeScreen, criterionLinkPeripheral, criterionKeyboardCat);
 
-        BusGroup bus = FMLJavaModLoadingContext.get().getModBusGroup();
         WDNetworkRegistry.init();
         SOUNDS.register(bus);
         onRegisterSounds();
@@ -142,7 +140,7 @@ public class WebDisplays {
         
         PROXY.preInit();
         
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
 
         //Other things
         PROXY.init();
@@ -163,13 +161,6 @@ public class WebDisplays {
         
         if (!FMLEnvironment.production) {
             ScreenControlRegistry.init();
-        }
-    }
-
-    @SubscribeEvent
-    public static void onAttachPlayerCap(AttachCapabilitiesEvent.Entities event) {
-        if (event.getObject() instanceof Player && !event.getObject().getCapability(WDDCapability.Provider.cap).isPresent()) {
-            event.addCapability(new Identifier("webdisplays", "wddcapability"), new WDDCapability.Provider());
         }
     }
 
@@ -298,14 +289,13 @@ public class WebDisplays {
         }
 
         if(!ev.getEntity().level().isClientSide && ev.getEntity() instanceof ServerPlayer) {
-            IWDDCapability cap = ev.getEntity().getCapability(WDDCapability.Provider.cap, null).orElseThrow(RuntimeException::new);
-
-            if(cap.isFirstRun()) {
+            CompoundTag persistentData = ev.getEntity().getPersistentData();
+            if (!persistentData.getBoolean("webdisplays_welcomed")) {
                 Util.toast(ev.getEntity(), ChatFormatting.LIGHT_PURPLE, "welcome1");
                 Util.toast(ev.getEntity(), ChatFormatting.LIGHT_PURPLE, "welcome2");
                 Util.toast(ev.getEntity(), ChatFormatting.LIGHT_PURPLE, "welcome3");
 
-                cap.clearFirstRun();
+                persistentData.putBoolean("webdisplays_welcomed", true);
             }
 
             PacketDistributor.PacketTarget packetDistrutor = PacketDistributor.PLAYER.with(
@@ -325,27 +315,9 @@ public class WebDisplays {
     }
 
     @SubscribeEvent
-    public void attachEntityCaps(AttachCapabilitiesEvent.Entities ev) {
-        if(ev.getObject() instanceof Player)
-            ev.addCapability(CAPABILITY, new WDDCapability.Provider());
-    }
-
-    @SubscribeEvent
     public void onPlayerClone(PlayerEvent.Clone ev) {
-        IWDDCapability src =  ev.getOriginal().getCapability(WDDCapability.Provider.cap, null).orElse(new WDDCapability.Factory().call());
-        IWDDCapability dst =  ev.getEntity().getCapability(WDDCapability.Provider.cap, null).orElse(new WDDCapability.Factory().call());
-
-        if(src == null) {
-            Log.error("src is null");
-            return;
-        }
-
-        if(dst == null) {
-            Log.error("dst is null");
-            return;
-        }
-
-        src.cloneTo(dst);
+        if (ev.getOriginal().getPersistentData().getBoolean("webdisplays_welcomed"))
+            ev.getEntity().getPersistentData().putBoolean("webdisplays_welcomed", true);
     }
 
     @SubscribeEvent

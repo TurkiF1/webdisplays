@@ -5,7 +5,6 @@
 package net.montoyo.wd.net.server_bound;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.miniserv.server.ClientManager;
 import net.montoyo.wd.miniserv.server.Server;
 import net.montoyo.wd.net.BufferUtils;
@@ -37,7 +36,7 @@ public class C2SMessageMiniservConnect extends Packet {
 	}
 	
 	@Override
-	public void handle(CustomPayloadEvent.Context ctx) {
+	public void handle(net.montoyo.wd.net.PacketContext ctx) {
 		if (checkServer(ctx)) {
 			try {
 				ClientManager cliMgr = Server.getInstance().getClientManager();

@@ -3,7 +3,7 @@ package net.montoyo.wd.registry;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.neoforged.bus.api.BusGroup;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryObject;
@@ -14,7 +14,7 @@ import net.montoyo.wd.block.ScreenBlock;
 import net.montoyo.wd.core.DefaultPeripheral;
 
 public class BlockRegistry {
-    public static void init(BusGroup bus) {
+    public static void init(IEventBus bus) {
         BLOCKS.register(bus);
     }
 

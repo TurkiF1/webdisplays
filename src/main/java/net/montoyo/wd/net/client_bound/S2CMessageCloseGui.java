@@ -6,7 +6,6 @@ package net.montoyo.wd.net.client_bound;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.net.Packet;
 import net.montoyo.wd.utilities.data.BlockSide;
@@ -45,7 +44,7 @@ public class S2CMessageCloseGui extends Packet {
 		else buf.writeByte(blockSide.ordinal() + 1);
 	}
 	
-	public void handle(CustomPayloadEvent.Context ctx) {
+	public void handle(net.montoyo.wd.net.PacketContext ctx) {
 		if (checkClient(ctx)) {
 			ctx.enqueueWork(() -> {
 				if (blockSide == null)

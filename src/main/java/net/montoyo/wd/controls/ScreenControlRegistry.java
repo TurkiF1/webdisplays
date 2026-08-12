@@ -6,7 +6,6 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.controls.builtin.*;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.utilities.data.BlockSide;
@@ -32,7 +31,7 @@ public class ScreenControlRegistry {
 			if (FMLEnvironment.dist.isClient()) {
 				boolean shouldThrow = false;
 				try {
-					Method m = type.clazz.getMethod("handleClient", BlockPos.class, BlockSide.class, ScreenBlockEntity.class, CustomPayloadEvent.Context.class);
+					Method m = type.clazz.getMethod("handleClient", BlockPos.class, BlockSide.class, ScreenBlockEntity.class, net.montoyo.wd.net.PacketContext.class);
 					OnlyIn onlyIn = m.getAnnotation(OnlyIn.class);
 					if (onlyIn == null) shouldThrow = true;
 					Dist d = onlyIn.value(); // idc if this throws, lol

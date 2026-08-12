@@ -1,8 +1,8 @@
 package net.montoyo.wd.config.annoconfg;
 
-import net.neoforged.neoforge.common.ForgeConfigSpec;
-import net.neoforged.bus.api.BusGroup;
-import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.montoyo.wd.config.annoconfg.annotation.format.*;
@@ -21,16 +21,18 @@ import java.util.HashMap;
 import java.util.function.Supplier;
 
 public class AnnoCFG {
-	private ForgeConfigSpec mySpec;
+	private ModConfigSpec mySpec;
 	
 	private final HashMap<String, ConfigEntry> handles = new HashMap<>();
 	
 	private static final ArrayList<AnnoCFG> configs = new ArrayList<>();
 	private final Method postInit;
+	private final ModContainer modContainer;
 	
-	public AnnoCFG(BusGroup bus, Class<?> clazz) {
+	public AnnoCFG(IEventBus bus, ModContainer modContainer, Class<?> clazz) {
+		this.modContainer = modContainer;
 		bus.addListener(this::onConfigChange);
-		ForgeConfigSpec.Builder configBuilder = new ForgeConfigSpec.Builder();
+		ModConfigSpec.Builder configBuilder = new ModConfigSpec.Builder();
 		setup("", configBuilder, clazz);
 		configs.add(this);
 		
@@ -46,15 +48,15 @@ public class AnnoCFG {
 			String pth = configDescriptor.path();
 			if (!pth.isEmpty()) pth = pth + "/";
 			switch (configDescriptor.type()) {
-				case SERVER -> create(ModConfig.Type.SERVER, pth + ModLoadingContext.get().getActiveNamespace() + "_server.toml");
-				case CLIENT -> create(ModConfig.Type.CLIENT, pth + ModLoadingContext.get().getActiveNamespace() + "_client.toml");
-				case COMMON -> create(ModConfig.Type.COMMON, pth + ModLoadingContext.get().getActiveNamespace() + "_common.toml");
+				case SERVER -> create(ModConfig.Type.SERVER, pth + "webdisplays_server.toml");
+				case CLIENT -> create(ModConfig.Type.CLIENT, pth + "webdisplays_client.toml");
+				case COMMON -> create(ModConfig.Type.COMMON, pth + "webdisplays_common.toml");
 				default -> throw new RuntimeException("wat");
 			}
 		}
 	}
 	
-	protected void setupCommentsAndTranslations(AnnotatedElement element, ForgeConfigSpec.Builder builder, String... additionalLines) {
+	protected void setupCommentsAndTranslations(AnnotatedElement element, ModConfigSpec.Builder builder, String... additionalLines) {
 		Translation translation = element.getAnnotation(Translation.class);
 		Comment comment = element.getAnnotation(Comment.class);
 		
@@ -75,7 +77,7 @@ public class AnnoCFG {
 			builder.translation(translation.value());
 	}
 	
-	public void setup(String dir, ForgeConfigSpec.Builder builder, Class<?> clazz) {
+	public void setup(String dir, ModConfigSpec.Builder builder, Class<?> clazz) {
 		if (dir.startsWith(".")) dir = dir.substring(1);
 		
 		for (Field field : clazz.getFields()) {
@@ -214,6 +216,6 @@ public class AnnoCFG {
 	}
 	
 	public void create(ModConfig.Type type, String file) {
-		ModLoadingContext.get().registerConfig(type, mySpec, file);
+		modContainer.registerConfig(type, mySpec, file);
 	}
 }

@@ -3,7 +3,6 @@ package net.montoyo.wd.net.server_bound;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.item.ItemMinePad2;
 import net.montoyo.wd.net.Packet;
 
@@ -40,7 +39,7 @@ public class C2SMessageMinepadUrl extends Packet {
 	}
 	
 	@Override
-	public void handle(CustomPayloadEvent.Context ctx) {
+	public void handle(net.montoyo.wd.net.PacketContext ctx) {
 		// check if the player is holding a minePad with the requested id
 		// if the player is, then update that pad
 		for (InteractionHand value : InteractionHand.values()) {
