@@ -387,8 +387,13 @@ public class ScreenBlockEntity extends BlockEntity {
 
         if (level.isClientSide())
             Log.warning("TileEntityScreen.click() from client side is useless...");
-        else if (getLaserUser(scr) == null)
+        else if (getLaserUser(scr) == null) {
+            // A block-state refresh can replace the client block entity after the
+            // initial add-screen packet. Re-send the authoritative screen first so
+            // the following mouse event always has a valid browser target.
+            WDNetworkRegistry.INSTANCE.send(new S2CMessageAddScreen(this, scr), WDNetworkRegistry.near(point(level, getBlockPos())));
             WDNetworkRegistry.INSTANCE.send(S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.CLICK, vec), WDNetworkRegistry.near(point(level, getBlockPos())));
+        }
     }
 
     public void handleMouseEvent(BlockSide side, ClickControl.ControlType event, @Nullable Vector2i vec, int button) {

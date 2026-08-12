@@ -132,6 +132,12 @@ public class S2CMessageAddScreen extends Packet {
 					tes.clear();
 				
 				for (ScreenData entry : screens) {
+					// Incremental synchronization is also sent immediately before an
+					// interaction. Keep an existing browser intact; only rebuild a side
+					// that the client has genuinely lost.
+					if (!clear && tes.getScreen(entry.side) != null)
+						continue;
+
 					ScreenData scr = tes.addScreen(entry.side, entry.size, entry.resolution, null, false);
 					scr.rotation = entry.rotation;
 					String webUrl;
@@ -146,6 +152,8 @@ public class S2CMessageAddScreen extends Packet {
 					scr.owner = entry.owner;
 					scr.upgrades = entry.upgrades;
 					
+					if (scr.browser == null)
+						scr.createBrowser(tes, false);
 					if (scr.browser != null)
 						scr.browser.loadURL(webUrl);
 				}

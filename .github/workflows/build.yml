@@ -34,6 +34,7 @@ jobs:
           ! rg -U '@SubscribeEvent\s+public\s+static' src/main/java
           grep -A1 -F 'if (world.isClientSide())' src/main/java/net/montoyo/wd/block/ScreenBlock.java | grep -Fq 'return InteractionResult.SUCCESS'
           grep -A2 -F 'if (stack.isEmpty())' src/main/java/net/montoyo/wd/block/ScreenBlock.java | grep -Fq 'return InteractionResult.TRY_WITH_EMPTY_HAND'
+          grep -Fq 'new S2CMessageAddScreen(this, scr)' src/main/java/net/montoyo/wd/entity/ScreenBlockEntity.java
       - name: Smoke-test NeoForge server startup
         run: |
           mkdir -p run-server
