@@ -51,7 +51,7 @@ public class C2SMessageACQuery extends Packet implements Runnable {
 			result = Arrays.stream(profiles).filter(gp -> gp.getName().toLowerCase().startsWith(lBeg)).map(NameUUIDPair::new).toArray(NameUUIDPair[]::new);
 		}
 		
-		WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(player), new S2CMessageACResult(result));
+		WDNetworkRegistry.INSTANCE.send(new S2CMessageACResult(result), PacketDistributor.PLAYER.with(player));
 	}
 	
 	public void handle(CustomPayloadEvent.Context ctx) {

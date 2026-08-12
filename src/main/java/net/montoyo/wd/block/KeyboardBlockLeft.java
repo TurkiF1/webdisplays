@@ -130,7 +130,7 @@ public class KeyboardBlockLeft extends PeripheralBlock {
         removeRightPiece(state, world, pos);
         if (setState)
             world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-        WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(point(world, pos)), new S2CMessageCloseGui(pos));
+        WDNetworkRegistry.INSTANCE.send(new S2CMessageCloseGui(pos), PacketDistributor.NEAR.with(point(world, pos)));
     }
     
     @Override

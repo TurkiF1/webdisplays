@@ -307,12 +307,12 @@ public class WebDisplays {
             }
 
             PacketDistributor.PacketTarget packetDistrutor = PacketDistributor.PLAYER.with(
-                    () -> (ServerPlayer) ev.getEntity()
+                    (ServerPlayer) ev.getEntity()
             );
 
             S2CMessageServerInfo message = new S2CMessageServerInfo(miniservPort);
 
-            WDNetworkRegistry.INSTANCE.send(packetDistrutor, message);
+            WDNetworkRegistry.INSTANCE.send(message, packetDistrutor);
         }
     }
 
@@ -420,4 +420,3 @@ public class WebDisplays {
         return isSiteBlacklisted(url) ? BLACKLIST_URL : url;
     }
 }
-
