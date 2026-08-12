@@ -92,7 +92,6 @@ public class KeyboardBlockLeft extends PeripheralBlock {
         }
     }
     
-    @Override
     private @NotNull InteractionResult useLegacy(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (player.getItemInHand(hand).getItem() instanceof ItemLinker)
             return InteractionResult.PASS;
