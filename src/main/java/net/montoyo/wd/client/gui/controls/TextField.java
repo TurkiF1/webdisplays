@@ -133,12 +133,12 @@ public class TextField extends Control {
     
     @Override
     public boolean keyDown(int key, int scanCode, int modifiers) {
-        return field.keyPressed(key, scanCode, modifiers);
+        return false;
     }
     
     @Override
     public boolean keyUp(int key, int scanCode, int modifiers) {
-        return field.keyReleased(key, scanCode, modifiers);
+        return false;
     }
     
     @Override
@@ -161,7 +161,7 @@ public class TextField extends Control {
                 parent.actionPerformed(new TextChangedEvent(this, old));
             }
             
-            return field.charTyped((char) keyCode, modifier);
+            return false;
         }
 
         return false;
@@ -169,11 +169,8 @@ public class TextField extends Control {
     
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (field.mouseClicked(mouseX, mouseY, mouseButton)) {
-            setFocused(true);
-            return true;
-        }
-        return false;
+        setFocused(true);
+        return true;
     }
 
     @Override
@@ -183,12 +180,12 @@ public class TextField extends Control {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int state) {
-        return field.mouseReleased(mouseX, mouseY, state);
+        return false;
     }
     
     @Override
     public boolean mouseClickMove(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        return field.mouseClicked(mouseX, mouseY, 0);
+        return false;
     }
     
     @Override

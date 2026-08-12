@@ -5,7 +5,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.montoyo.wd.controls.builtin.*;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.utilities.data.BlockSide;
@@ -25,27 +24,6 @@ public class ScreenControlRegistry {
 		}
 		CONTROL_TYPES.put(name, type);
 		
-		// lil thing for sanity
-		// avoids the pain the dist cleaner causes, hopefully
-		if (!FMLEnvironment.production) {
-			if (FMLEnvironment.dist.isClient()) {
-				boolean shouldThrow = false;
-				try {
-					Method m = type.clazz.getMethod("handleClient", BlockPos.class, BlockSide.class, ScreenBlockEntity.class, net.montoyo.wd.net.PacketContext.class);
-					OnlyIn onlyIn = m.getAnnotation(OnlyIn.class);
-					if (onlyIn == null) shouldThrow = true;
-					Dist d = onlyIn.value(); // idc if this throws, lol
-					if (d != Dist.CLIENT) shouldThrow = true;
-				} catch (Throwable ignored) {
-				}
-				if (shouldThrow) {
-					Log.warning("handleClient on ScreenControl classes MUST be marked with `@OnlyIn(Dist.CLIENT)`, but it is not on " + type.clazz);
-					throw new IllegalStateException(
-							"handleClient on ScreenControl classes MUST be marked with `@OnlyIn(Dist.CLIENT)`, but it is not on " + type.clazz
-					);
-				}
-			}
-		}
 	}
 	
 	// if needed, the old code

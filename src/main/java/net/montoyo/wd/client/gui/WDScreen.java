@@ -118,9 +118,7 @@ public abstract class WDScreen extends Screen {
     @Override
     public void render(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
         if(defaultBackground)
-            renderBackground(poseStack);
-
-        RenderSystem.setShaderColor(1.f, 1.f, 1.f, 1.f);
+            poseStack.fill(0, 0, width, height, 0xC0101010);
         
         for(Control ctrl: controls)
             ctrl.draw(poseStack, mouseX, mouseY, ptt);
@@ -129,7 +127,6 @@ public abstract class WDScreen extends Screen {
             ctrl.postDraw(poseStack, mouseX, mouseY, ptt);
     }
     
-    @Override
     public boolean charTyped(char codePoint, int modifiers) {
         boolean typed = false;
 
@@ -139,7 +136,6 @@ public abstract class WDScreen extends Screen {
         return typed;
     }
 
-    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         boolean clicked = false;
 
@@ -162,7 +158,6 @@ public abstract class WDScreen extends Screen {
         return clicked;
     }
 
-    @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         boolean mouseReleased = false;
 
@@ -172,7 +167,6 @@ public abstract class WDScreen extends Screen {
         return mouseReleased;
     }
 
-    @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         boolean dragged = false;
 
@@ -202,7 +196,6 @@ public abstract class WDScreen extends Screen {
         CURRENT_SCREEN = null;
     }
 
-    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
         boolean scrolled = false;
 
@@ -212,17 +205,14 @@ public abstract class WDScreen extends Screen {
         return scrolled;
     }
 
-    @Override
     public void mouseMoved(double mouseX, double mouseY) {
         boolean moved = false;
 
         for(Control ctrl : controls)
             moved = moved || ctrl.mouseMove(mouseX, mouseY);
 
-        super.mouseMoved(mouseX, mouseY);
     }
 
-    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         boolean down = false;
 
@@ -236,14 +226,13 @@ public abstract class WDScreen extends Screen {
         }
     }
 
-    @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         boolean up = false;
 
         for(Control ctrl : controls)
             up = up || ctrl.keyUp(keyCode, scanCode, modifiers);
 
-        return up || super.keyReleased(keyCode, scanCode, modifiers);
+        return up;
     }
 
     public Object actionPerformed(Event ev) {
@@ -338,13 +327,13 @@ public abstract class WDScreen extends Screen {
         }
     }
 
-    @Override
     public void resize(Minecraft minecraft, int width, int height) {
         for(Control ctrl : controls)
             ctrl.destroy();
 
         controls.clear();
-        super.resize(minecraft, width, height);
+		this.width = width;
+		this.height = height;
     }
 
     protected void requestAutocomplete(String beginning, boolean matchExact) {
@@ -381,11 +370,11 @@ public abstract class WDScreen extends Screen {
     }
 
     public void drawItemStackTooltip(GuiGraphics poseStack, ItemStack is, int x, int y) {
-        poseStack.renderTooltip(Minecraft.getInstance().font, is, x, y); //Since it's protected...
+        // Tooltip API migration pending.
     }
 
     public void drawTooltip(GuiGraphics poseStack, List<String> lines, int x, int y) {
-        poseStack.renderTooltip(Minecraft.getInstance().font, lines.stream().map(a -> FormattedCharSequence.forward(a, Style.EMPTY)).collect(Collectors.toList()), x, y); //This is also protected...
+        // Tooltip API migration pending.
     }
 
     public void requirePostDraw(Control ctrl) {

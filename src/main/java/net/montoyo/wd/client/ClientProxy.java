@@ -564,7 +564,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	public void onTick(ClientTickEvent.Post ev) {
 		
 		//Help
-		if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().handle(), GLFW.GLFW_KEY_F1)) {
+		if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_F1)) {
 			if (!isF1Down) {
 				isF1Down = true;
 				

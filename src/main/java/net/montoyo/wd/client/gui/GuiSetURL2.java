@@ -4,6 +4,8 @@
 
 package net.montoyo.wd.client.gui;
 
+import net.minecraft.nbt.CompoundTag;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;

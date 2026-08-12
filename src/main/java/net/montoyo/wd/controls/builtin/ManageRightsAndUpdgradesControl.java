@@ -54,7 +54,7 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 		switch (type) {
 			case UPGRADES -> {
 				adding = buf.readBoolean();
-				toRemove = buf.readItem();
+				toRemove = ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
 			}
 			case RIGHTS -> {
 				friendRights = buf.readInt();
@@ -69,7 +69,7 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 		switch (type) {
 			case UPGRADES -> {
 				buf.writeBoolean(adding);
-				buf.writeItem(toRemove);
+				ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, toRemove);
 			}
 			case RIGHTS -> {
 				buf.writeInt(friendRights);

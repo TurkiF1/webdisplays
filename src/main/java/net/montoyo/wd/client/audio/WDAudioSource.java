@@ -28,7 +28,7 @@ public class WDAudioSource implements SoundInstance {
         }
     };
     private final Sound sound = new Sound(
-            "unused",
+            Identifier.parse("webdisplays:unused"),
             CONST_1,
             CONST_1,
             1, Sound.Type.SOUND_EVENT,
@@ -44,7 +44,7 @@ public class WDAudioSource implements SoundInstance {
     }
 
     @Override
-    public Identifier getLocation() {
+    public Identifier getIdentifier() {
         return location;
     }
 
@@ -54,7 +54,6 @@ public class WDAudioSource implements SoundInstance {
         return events;
     }
 
-    @Override
     public CompletableFuture<AudioStream> getStream(SoundBufferLibrary soundBuffers, Sound sound, boolean looping) {
         return null;
     }
