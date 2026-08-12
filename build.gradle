@@ -35,11 +35,11 @@ repositories {
     exclusiveContent {
         forRepository {
             maven {
-                name = 'Modrinth'
-                url = 'https://api.modrinth.com/maven'
+                name = 'CurseMaven'
+                url = 'https://cursemaven.com'
             }
         }
-        filter { includeGroup 'maven.modrinth' }
+        filter { includeGroup 'curse.maven' }
     }
 }
 
@@ -47,7 +47,7 @@ dependencies {
     implementation "net.neoforged:neoforge:${neoforge_version}"
 
     // MCEF 2.2.0 for Minecraft 1.21.11. It supplies the actual Chromium browser.
-    implementation('maven.modrinth:mcef-keksuccino:E0dvGikq') { transitive = false }
+    implementation('curse.maven:mcef-keksuccino-1366156:7587822') { transitive = false }
 }
 
 tasks.withType(JavaCompile).configureEach {
