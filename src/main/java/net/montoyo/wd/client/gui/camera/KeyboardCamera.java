@@ -212,29 +212,28 @@ public class KeyboardCamera {
 
     protected static int delay = 8;
 
-    public static void gameTick(TickEvent.ClientTickEvent event) {
+    public static void gameTick(TickEvent.ClientTickEvent.Post event) {
         if (mouseStatus[0] || mouseStatus[1]) {
             oxCrd = Mth.lerp(0.5, oxCrd, xCrd);
             oyCrd = Mth.lerp(0.5, oyCrd, yCrd);
             return;
         }
-        if (event.phase.equals(TickEvent.Phase.END)) {
-            if (side == null) {
-                delay = 1;
-                oxCrd = -1;
-                oyCrd = -1;
-                xCrd = -1;
-                yCrd = -1;
-                nxCrd = -1;
-                nyCrd = -1;
-                return;
-            }
+        if (side == null) {
+            delay = 1;
+            oxCrd = -1;
+            oyCrd = -1;
+            xCrd = -1;
+            yCrd = -1;
+            nxCrd = -1;
+            nyCrd = -1;
+            return;
+        }
 
-            if (!(Minecraft.getInstance().screen instanceof GuiKeyboard)) {
-                tes = null;
-                side = null;
-                return;
-            }
+        if (!(Minecraft.getInstance().screen instanceof GuiKeyboard)) {
+            tes = null;
+            side = null;
+            return;
+        }
 
             pollElement();
 
@@ -260,14 +259,13 @@ public class KeyboardCamera {
                 }
             }
 
-            nxCrd = anxx;
-            nyCrd = anxy;
+        nxCrd = anxx;
+        nyCrd = anxy;
 
-            oxCrd = Mth.lerp(0.5, oxCrd, xCrd);
-            xCrd = Mth.lerp(0.15, xCrd, nxCrd);
+        oxCrd = Mth.lerp(0.5, oxCrd, xCrd);
+        xCrd = Mth.lerp(0.15, xCrd, nxCrd);
 
-            oyCrd = Mth.lerp(0.5, oyCrd, yCrd);
-            yCrd = Mth.lerp(0.15, yCrd, nyCrd);
-        }
+        oyCrd = Mth.lerp(0.5, oyCrd, yCrd);
+        yCrd = Mth.lerp(0.15, yCrd, nyCrd);
     }
 }

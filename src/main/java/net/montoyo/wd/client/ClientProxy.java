@@ -262,6 +262,8 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		super.preInit();
 		mc = Minecraft.getInstance();
 		MinecraftForge.EVENT_BUS.register(this);
+		TickEvent.LevelTickEvent.Post.BUS.addListener(this::onLevelTick);
+		TickEvent.ClientTickEvent.Post.BUS.addListener(this::onTick);
 	}
 	
 	@Override
@@ -559,10 +561,8 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 
 	/**************************************** EVENT METHODS ****************************************/
 
-	@SubscribeEvent
-	public void onLevelTick(TickEvent.LevelTickEvent ev) {
-		if (!ev.side.equals(LogicalSide.CLIENT)) return;
-		if (ev.phase != TickEvent.Phase.END) return;
+	public void onLevelTick(TickEvent.LevelTickEvent.Post ev) {
+		if (!ev.side().equals(LogicalSide.CLIENT)) return;
 		
 		//Unload/load screens depending on client player distance
 		if (mc.player == null || screenTracking.isEmpty())
@@ -572,7 +572,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		
 		ScreenBlockEntity tes = screenTracking.get(id);
 		
-		if (!tes.getLevel().equals(ev.level))
+		if (!tes.getLevel().equals(ev.level()))
 			return;
 		
 		lastTracked++;
@@ -608,9 +608,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		}
 	}
 	
-	@SubscribeEvent
-	public void onTick(TickEvent.ClientTickEvent ev) {
-		if (ev.phase != TickEvent.Phase.END) return;
+	public void onTick(TickEvent.ClientTickEvent.Post ev) {
 		
 		//Help
 		if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_F1)) {
