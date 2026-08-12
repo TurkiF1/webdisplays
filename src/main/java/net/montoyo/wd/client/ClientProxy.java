@@ -240,7 +240,6 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	private int minePadTickCounter = 0;
 	
 	/**************************************** INHERITED METHODS ****************************************/
-	@SubscribeEvent
 	public static void onClientSetup(FMLClientSetupEvent event) {
 		BlockEntityRenderers.register(TileRegistry.SCREEN_BLOCK_ENTITY.get(), new ScreenRenderer.ScreenRendererProvider());
 	}
