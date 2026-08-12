@@ -3,7 +3,6 @@ package net.montoyo.wd.net;
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.montoyo.wd.utilities.DistSafety;
 
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class Packet {
 			if (checkClient(ctx))
 				WDNetworkRegistry.INSTANCE.sendToServer(packet);
 			else if (ctx.getSender() != null)
-					WDNetworkRegistry.INSTANCE.send(packet, PacketDistributor.PLAYER.with(ctx.getSender()));
+					WDNetworkRegistry.INSTANCE.send(packet, WDNetworkRegistry.player(ctx.getSender()));
 			else WDNetworkRegistry.INSTANCE.reply(packet, ctx);
 		}));
 	}

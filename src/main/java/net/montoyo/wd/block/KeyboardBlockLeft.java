@@ -23,7 +23,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.montoyo.wd.core.DefaultPeripheral;
 import net.montoyo.wd.entity.KeyboardBlockEntity;
 import net.montoyo.wd.item.ItemLinker;
@@ -128,7 +127,7 @@ public class KeyboardBlockLeft extends PeripheralBlock {
         removeRightPiece(state, world, pos);
         if (setState)
             world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-        WDNetworkRegistry.INSTANCE.send(new S2CMessageCloseGui(pos), PacketDistributor.NEAR.with(point(world, pos)));
+        WDNetworkRegistry.INSTANCE.send(new S2CMessageCloseGui(pos), WDNetworkRegistry.near(point(world, pos)));
     }
     
     @Override

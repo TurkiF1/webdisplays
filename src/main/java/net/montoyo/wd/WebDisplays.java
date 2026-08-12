@@ -9,6 +9,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -35,9 +36,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.client.gui.camera.KeyboardCamera;
 import net.montoyo.wd.config.ClientConfig;
@@ -130,7 +129,7 @@ public class WebDisplays {
         criterionKeyboardCat = new Criterion("keyboard_cat");
         registerTrigger(criterionPadBreak, criterionUpgradeScreen, criterionLinkPeripheral, criterionKeyboardCat);
 
-        WDNetworkRegistry.init();
+        bus.addListener(WDNetworkRegistry::register);
         SOUNDS.register(bus);
         onRegisterSounds();
         WDTabs.init(bus);
@@ -298,7 +297,7 @@ public class WebDisplays {
                 persistentData.putBoolean("webdisplays_welcomed", true);
             }
 
-            PacketDistributor.PacketTarget packetDistrutor = PacketDistributor.PLAYER.with(
+            WDNetworkRegistry.Target packetDistrutor = WDNetworkRegistry.player(
                     (ServerPlayer) ev.getEntity()
             );
 
@@ -356,7 +355,7 @@ public class WebDisplays {
         return new WebDisplays().lastPadId++;
     }
 
-    public static DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, "webdisplays");
+    public static DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, "webdisplays");
 
     private static SoundEvent registerSound(String resName) {
         Identifier resLoc = new Identifier("webdisplays", resName);

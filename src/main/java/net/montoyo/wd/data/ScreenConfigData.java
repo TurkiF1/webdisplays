@@ -11,7 +11,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.montoyo.wd.client.gui.GuiScreenConfig;
 import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.ScreenBlockEntity;
@@ -81,8 +80,8 @@ public class ScreenConfigData extends GuiData {
 		return this;
 	}
 	
-	public void sendTo(PacketDistributor.TargetPoint tp) {
-		WDNetworkRegistry.INSTANCE.send(new S2CMessageOpenGui(this), PacketDistributor.NEAR.with(tp));
+	public void sendTo(WDNetworkRegistry.TargetPoint tp) {
+		WDNetworkRegistry.INSTANCE.send(new S2CMessageOpenGui(this), WDNetworkRegistry.near(tp));
 	}
 	
 	@Override

@@ -9,13 +9,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 public class WDTabs {
 	public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, "webdisplays");
 	
-	public static final RegistryObject<CreativeModeTab> EXAMPLE_TAB = TABS.register("main", () -> CreativeModeTab.builder()
+	public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = TABS.register("main", () -> CreativeModeTab.builder()
 			// Set name of tab to display
 			.title(Component.translatable("itemGroup.webdisplays"))
 			// Set icon of creative tab

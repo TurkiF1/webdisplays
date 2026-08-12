@@ -19,6 +19,8 @@ public interface PacketContext {
 
     void enqueueWork(Runnable task);
 
+    void reply(LegacyPayload payload);
+
     default void setPacketHandled(boolean handled) {
     }
 }

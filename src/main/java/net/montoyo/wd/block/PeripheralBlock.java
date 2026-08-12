@@ -27,7 +27,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.montoyo.wd.core.DefaultPeripheral;
 import net.montoyo.wd.entity.AbstractInterfaceBlockEntity;
 import net.montoyo.wd.entity.AbstractPeripheralBlockEntity;
@@ -126,7 +125,7 @@ public class PeripheralBlock extends WDContainerBlock {
     @Override
     public void playerDestroy(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
         if (!world.isClientSide) {
-            WDNetworkRegistry.INSTANCE.send(new S2CMessageCloseGui(pos), PacketDistributor.NEAR.with(point(world, pos)));
+            WDNetworkRegistry.INSTANCE.send(new S2CMessageCloseGui(pos), WDNetworkRegistry.near(point(world, pos)));
         }
         super.playerDestroy(world, player, pos, state, blockEntity, tool);
     }
@@ -136,12 +135,12 @@ public class PeripheralBlock extends WDContainerBlock {
         playerDestroy(level, null, pos, level.getBlockState(pos), null, null);
     }
 
-    public static PacketDistributor.TargetPoint point(Player exclude, Level world, BlockPos bp) {
-        return new PacketDistributor.TargetPoint((ServerPlayer) exclude, bp.getX(), bp.getY(), bp.getZ(), 64.0, world.dimension());
+    public static WDNetworkRegistry.TargetPoint point(Player exclude, Level world, BlockPos bp) {
+        return new WDNetworkRegistry.TargetPoint((ServerPlayer) exclude, bp.getX(), bp.getY(), bp.getZ(), 64.0, world.dimension());
     }
 
-    public static PacketDistributor.TargetPoint point(Level world, BlockPos bp) {
-        return new PacketDistributor.TargetPoint(bp.getX(), bp.getY(), bp.getZ(), 64.0, world.dimension());
+    public static WDNetworkRegistry.TargetPoint point(Level world, BlockPos bp) {
+        return new WDNetworkRegistry.TargetPoint(null, bp.getX(), bp.getY(), bp.getZ(), 64.0, world.dimension());
     }
 
 }

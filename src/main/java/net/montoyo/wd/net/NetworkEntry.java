@@ -1,7 +1,6 @@
 package net.montoyo.wd.net;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.SimpleChannel;
 
 import java.util.function.Function;
 
@@ -14,11 +13,7 @@ public class NetworkEntry<T extends Packet> {
 		this.fabricator = fabricator;
 	}
 	
-	public void register(int indx, SimpleChannel channel) {
-		channel.messageBuilder(clazz, indx)
-				.encoder(Packet::write)
-				.decoder(fabricator)
-				.consumerMainThread(Packet::handle)
-				.add();
+	public T decode(FriendlyByteBuf buffer) {
+		return fabricator.apply(buffer);
 	}
 }

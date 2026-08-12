@@ -6,10 +6,10 @@ package net.montoyo.wd.net.server_bound;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.common.ForgeMod;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.entity.RedstoneControlBlockEntity;
 import net.montoyo.wd.entity.ScreenBlockEntity;
@@ -43,7 +43,7 @@ public class C2SMessageRedstoneCtrl extends Packet implements Runnable {
 	public void run() {
 		Level world = player.level();
 		BlockPos blockPos = pos.toBlock();
-		final double maxRange = player.getAttribute(ForgeMod.BLOCK_REACH.get()).getValue();
+		final double maxRange = player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE);
 		
 		if (player.distanceToSqr(blockPos.getX(), blockPos.getY(), blockPos.getZ()) > maxRange * maxRange)
 			return;

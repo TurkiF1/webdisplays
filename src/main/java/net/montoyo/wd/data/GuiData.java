@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageOpenGui;
 
@@ -62,7 +61,7 @@ public abstract class GuiData {
     public abstract String getName();
 
     public void sendTo(ServerPlayer player) {
-        WDNetworkRegistry.INSTANCE.send(new S2CMessageOpenGui(this), PacketDistributor.PLAYER.with(player));
+        WDNetworkRegistry.INSTANCE.send(new S2CMessageOpenGui(this), WDNetworkRegistry.player(player));
     }
 
     public abstract void serialize(FriendlyByteBuf buf);

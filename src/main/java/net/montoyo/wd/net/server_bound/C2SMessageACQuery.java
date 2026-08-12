@@ -7,7 +7,6 @@ package net.montoyo.wd.net.server_bound;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.net.Packet;
 import net.montoyo.wd.net.WDNetworkRegistry;
@@ -50,7 +49,7 @@ public class C2SMessageACQuery extends Packet implements Runnable {
 			result = Arrays.stream(profiles).filter(gp -> gp.getName().toLowerCase().startsWith(lBeg)).map(NameUUIDPair::new).toArray(NameUUIDPair[]::new);
 		}
 		
-		WDNetworkRegistry.INSTANCE.send(new S2CMessageACResult(result), PacketDistributor.PLAYER.with(player));
+		WDNetworkRegistry.INSTANCE.send(new S2CMessageACResult(result), WDNetworkRegistry.player(player));
 	}
 	
 	public void handle(net.montoyo.wd.net.PacketContext ctx) {
