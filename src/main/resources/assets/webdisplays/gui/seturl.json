@@ -13,6 +13,8 @@
       "x": 0,
       "y": 12,
       "width": 272,
+      "textColor": 16777215,
+      "disabledColor": 16777215,
       "maxLength": 65535
     },
     {
