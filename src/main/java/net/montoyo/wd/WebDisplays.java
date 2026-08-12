@@ -273,7 +273,7 @@ public class WebDisplays {
     }
 
     @SubscribeEvent
-    public static void onServerStop(ServerStoppingEvent ev) throws IOException {
+    public void onServerStop(ServerStoppingEvent ev) throws IOException {
         Server.getInstance().stopServer();
     }
 
