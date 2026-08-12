@@ -221,6 +221,11 @@ public class TextField extends Control {
     @Override
     public void draw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
         field.render(poseStack, mouseX, mouseY, ptt);
+        // NeoForge 1.21.11's EditBox can render its value with a black theme
+        // color in this legacy GUI. Draw the value explicitly so URL input is
+        // always visible to the player.
+        if (!field.getValue().isEmpty())
+            poseStack.drawString(font, field.getValue(), field.getX() + 4, field.getY() + 6, textColor, false);
     }
 
     public void setText(String text) {
