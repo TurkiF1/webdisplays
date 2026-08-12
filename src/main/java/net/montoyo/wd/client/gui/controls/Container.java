@@ -143,9 +143,6 @@ public abstract class Container extends BasicControl {
             mouseX -= x + paddingX;
             mouseY -= y + paddingY;
 
-            poseStack.pose().pushPose();
-            poseStack.pose().translate(x + paddingX, y + paddingY, 0.0);
-
             if(disabled) {
                 for(Control ctrl : childs)
                     ctrl.draw(poseStack, -1, -1, ptt);
@@ -154,7 +151,6 @@ public abstract class Container extends BasicControl {
                     ctrl.draw(poseStack, mouseX, mouseY, ptt);
             }
 
-            poseStack.pose().popPose();
         }
     }
 

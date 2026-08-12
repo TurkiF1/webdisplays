@@ -47,17 +47,8 @@ public class Icon extends BasicControl {
 
     @Override
     public void draw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
-        if(texture != null) {
-            poseStack.pose().pushPose();
-//            RenderSystem.enableTexture();
-            RenderSystem.setShaderTexture(1, texture);
-            RenderSystem.bindTexture(1);
-            RenderSystem.enableBlend();
-            fillTexturedRect(poseStack.pose(), x, y, width, height, u1, v1, u2, v2);
-            RenderSystem.disableBlend();
-            RenderSystem.bindTexture(-1);
-            poseStack.pose().popPose();
-        }
+        if(texture != null)
+            poseStack.blit(texture, x, y, 0, 0, width, height, width, height);
     }
 
     public void setWidth(int width) {

@@ -58,11 +58,9 @@ public class KeyboardBlockRight extends Block implements IPeripheral {
         WDNetworkRegistry.INSTANCE.send(new S2CMessageCloseGui(pos), WDNetworkRegistry.near(point(world, pos)));
     }
     
-    @Override
-    public void onRemove(BlockState arg, Level arg2, BlockPos arg3, BlockState arg4, boolean bl) {
+    public void onLegacyRemove(BlockState arg, Level arg2, BlockPos arg3, BlockState arg4, boolean bl) {
         if (!arg2.isClientSide())
             remove(arg, arg2, arg3, false, false);
-        super.onRemove(arg, arg2, arg3, arg4, bl);
     }
     
     @Override
@@ -86,8 +84,7 @@ public class KeyboardBlockRight extends Block implements IPeripheral {
         return keyboard != null && keyboard.connect(world, pos, state, scrPos, scrSide);
     }
     
-    @Override
-    public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
+    public void onLegacyEntityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         double rpos = (entity.getY() - ((double) pos.getY())) * 16.0;
         if (!world.isClientSide() && rpos >= 1.0 && rpos <= 2.0 && Math.random() < 0.25) {
             KeyboardBlockEntity tek = KeyboardBlockLeft.getTileEntity(state, world, pos);
@@ -98,7 +95,7 @@ public class KeyboardBlockRight extends Block implements IPeripheral {
     }
 
     @Override
-    public @NotNull InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    private @NotNull InteractionResult useLegacy(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (player.getItemInHand(hand).getItem() instanceof ItemLinker)
             return InteractionResult.PASS;
 
@@ -109,8 +106,17 @@ public class KeyboardBlockRight extends Block implements IPeripheral {
         return InteractionResult.PASS;
     }
     
-    @Override
     public VoxelShape getOcclusionShape(BlockState arg, BlockGetter arg2, BlockPos arg3) {
         return Shapes.empty();
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        return useLegacy(state, level, pos, player, InteractionHand.MAIN_HAND, hit);
+    }
+
+    @Override
+    protected InteractionResult useItemOn(net.minecraft.world.item.ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return useLegacy(state, level, pos, player, hand, hit);
     }
 }

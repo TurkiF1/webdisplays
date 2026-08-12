@@ -58,9 +58,8 @@ public class Button extends Control {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if(mouseButton == 0 && btn.mouseClicked(mouseX, mouseY, mouseButton)) {
+        if(mouseButton == 0 && btn.isMouseOver(mouseX, mouseY) && btn.active) {
             selected = true;
-            btn.playDownSound(mc.getSoundManager());
 
             if(!onClick())
                 parent.actionPerformed(new ClickEvent(this));
@@ -73,7 +72,6 @@ public class Button extends Control {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int state) {
         if(selected && state == 0) {
-            btn.mouseReleased(mouseX, mouseY,state);
             selected = false;
 
             return true;

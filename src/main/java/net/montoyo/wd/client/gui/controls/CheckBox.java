@@ -80,17 +80,9 @@ public class CheckBox extends BasicControl {
     @Override
     public void draw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
         if(visible) {
-//            GlStateManager.disableAlpha();
-            poseStack.pose().pushPose();
-            RenderSystem.enableBlend();
-            poseStack.blit(
-                    checked ? texChecked : texUnchecked, x, y, 0, 0, 0, WIDTH, HEIGHT, WIDTH, HEIGHT
-            );
-            RenderSystem.disableBlend();
-
-            poseStack.pose().popPose();
             boolean inside = (!disabled && mouseX >= x && mouseX <= x + WIDTH + 2 + labelW && mouseY >= y && mouseY < y + HEIGHT);
-            poseStack.drawString(Minecraft.getInstance().font, label, x + WIDTH + 2, y + 4, inside ? 0xFF0080FF : COLOR_WHITE, false);
+            poseStack.fill(x, y, x + WIDTH, y + HEIGHT, checked ? 0xFF0080FF : 0xFF404040);
+            poseStack.drawString(Minecraft.getInstance().font, label, x + WIDTH + 2, y + 4, inside ? 0xFF0080FF : 0xFFFFFFFF, false);
         }
     }
 

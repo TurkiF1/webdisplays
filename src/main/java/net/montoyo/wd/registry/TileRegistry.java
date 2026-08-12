@@ -13,18 +13,18 @@ public class TileRegistry {
 
     //Register tile entities
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ScreenBlockEntity>> SCREEN_BLOCK_ENTITY = TILE_TYPES
-            .register("screen", () -> BlockEntityType.create(ScreenBlockEntity::new, BlockRegistry.SCREEN_BLOCk.get()));
+            .register("screen", () -> new BlockEntityType<>(ScreenBlockEntity::new, false, BlockRegistry.SCREEN_BLOCk.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> KEYBOARD = TILE_TYPES.register("kb_left", () -> BlockEntityType.create(KeyboardBlockEntity::new, BlockRegistry.KEYBOARD_BLOCK.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> KEYBOARD = TILE_TYPES.register("kb_left", () -> new BlockEntityType<>(KeyboardBlockEntity::new, false, BlockRegistry.KEYBOARD_BLOCK.get()));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> REMOTE_CONTROLLER = TILE_TYPES.register("rctrl",
-            () -> BlockEntityType.create(RemoteControlBlockEntity::new, BlockRegistry.REMOTE_CONTROLLER_BLOCK.get()));         //WITHOUT FACING (>= 3)
+            () -> new BlockEntityType<>(RemoteControlBlockEntity::new, false, BlockRegistry.REMOTE_CONTROLLER_BLOCK.get()));         //WITHOUT FACING (>= 3)
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> REDSTONE_CONTROLLER = TILE_TYPES.register("redctrl",
-            () -> BlockEntityType.create(RedstoneControlBlockEntity::new, BlockRegistry.REDSTONE_CONTROL_BLOCK.get()));
+            () -> new BlockEntityType<>(RedstoneControlBlockEntity::new, false, BlockRegistry.REDSTONE_CONTROL_BLOCK.get()));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> SERVER = TILE_TYPES.register("server",
-            () -> BlockEntityType.create(ServerBlockEntity::new, BlockRegistry.SERVER_BLOCK.get()));
+            () -> new BlockEntityType<>(ServerBlockEntity::new, false, BlockRegistry.SERVER_BLOCK.get()));
 
     public static void init(IEventBus bus) {
         TILE_TYPES.register(bus);

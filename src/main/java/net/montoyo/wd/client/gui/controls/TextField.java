@@ -196,7 +196,7 @@ public class TextField extends Control {
     
     @Override
     public boolean mouseScroll(double mouseX, double mouseY, double amount) {
-        return field.mouseScrolled(mouseX, mouseY, amount);
+        return false;
     }
     
     @Override
