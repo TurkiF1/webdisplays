@@ -28,12 +28,6 @@ runs {
         workingDirectory project.file('run-server')
         arguments.add('--nogui')
     }
-    data {
-        workingDirectory project.file('run-data')
-        arguments.addAll '--mod', 'webdisplays', '--all', '--output',
-                file('src/generated/resources').absolutePath, '--existing',
-                file('src/main/resources').absolutePath
-    }
 }
 
 repositories {
