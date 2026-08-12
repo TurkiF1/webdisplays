@@ -35,6 +35,8 @@ jobs:
           grep -A1 -F 'if (world.isClientSide())' src/main/java/net/montoyo/wd/block/ScreenBlock.java | grep -Fq 'return InteractionResult.SUCCESS'
           grep -A2 -F 'if (stack.isEmpty())' src/main/java/net/montoyo/wd/block/ScreenBlock.java | grep -Fq 'return InteractionResult.TRY_WITH_EMPTY_HAND'
           grep -Fq 'new S2CMessageAddScreen(this, scr)' src/main/java/net/montoyo/wd/entity/ScreenBlockEntity.java
+          grep -Fq 'ClientboundBlockEntityDataPacket.create(this)' src/main/java/net/montoyo/wd/entity/ScreenBlockEntity.java
+          grep -Fq 'level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS)' src/main/java/net/montoyo/wd/entity/ScreenBlockEntity.java
       - name: Smoke-test NeoForge server startup
         run: |
           mkdir -p run-server
