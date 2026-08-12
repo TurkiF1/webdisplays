@@ -81,6 +81,12 @@ public class ScreenBlock extends BaseEntityBlock {
     }
 
     private InteractionResult useLegacy(BlockState state, Level world, BlockPos position, Player player, InteractionHand hand, BlockHitResult hit) {
+        // In current Minecraft the client must acknowledge the interaction so it
+        // is sent to the server. Returning FAIL here (as the legacy code did)
+        // prevents an empty-hand right click from ever reaching the screen logic.
+        if (world.isClientSide())
+            return InteractionResult.SUCCESS;
+
         ItemStack heldItem = player.getItemInHand(hand);
         boolean isUpgrade = false;
         if (heldItem.isEmpty())
@@ -92,9 +98,6 @@ public class ScreenBlock extends BaseEntityBlock {
 
         // handling the off hand leads to double clicking
         if (!isUpgrade && hand == InteractionHand.OFF_HAND)
-            return InteractionResult.FAIL;
-
-        if (world.isClientSide())
             return InteractionResult.FAIL;
 
         boolean sneaking = player.isShiftKeyDown();
