@@ -25,6 +25,12 @@ jobs:
         run: chmod +x gradlew
       - name: Build
         run: ./gradlew build --stacktrace
+      - name: Verify packaged client startup configuration
+        run: |
+          MOD_JAR="$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' -print -quit)"
+          test -n "$MOD_JAR"
+          unzip -p "$MOD_JAR" webdisplays.mixins.json > packaged-mixins.json
+          ! grep -Eq '"(MouseHandlerMixin|OverlayMixin)"' packaged-mixins.json
       - name: Upload build output
         if: always()
         uses: actions/upload-artifact@v5
