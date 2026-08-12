@@ -130,7 +130,7 @@ public class ScreenBlock extends BaseEntityBlock {
 
                         Util.toast(player, ChatFormatting.AQUA, "upgradeOk");
                         if (player instanceof ServerPlayer)
-                            WebDisplays.INSTANCE.criterionUpgradeScreen.trigger(((ServerPlayer) player).getAdvancements());
+                            WebDisplays.INSTANCE.criterionUpgradeScreen.trigger((ServerPlayer) player);
                     } else
                         Util.toast(player, "upgradeError");
 

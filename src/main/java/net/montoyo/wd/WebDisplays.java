@@ -7,7 +7,8 @@ package net.montoyo.wd;
 import com.google.gson.Gson;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -394,7 +395,7 @@ public class WebDisplays {
 
     private static void registerTrigger(Criterion ... criteria) {
         for(Criterion c: criteria)
-            CriteriaTriggers.register(c);
+            Registry.register(BuiltInRegistries.TRIGGER_TYPES, c.id(), c);
     }
 
    // public static boolean isOpenComputersAvailable() {
