@@ -1,6 +1,6 @@
 package net.montoyo.wd.config.annoconfg.annotation.format;
 
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.fml.config.ModConfig;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

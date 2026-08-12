@@ -9,7 +9,7 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
-import net.minecraftforge.fml.common.Optional;
+import net.neoforged.fml.common.Optional;
 import net.montoyo.wd.core.CCArguments;
 import net.montoyo.wd.core.IComputerArgs;
 

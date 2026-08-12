@@ -1,8 +1,8 @@
 package net.montoyo.wd.net;
 
 import net.minecraft.resources.Identifier;
-import net.minecraftforge.network.ChannelBuilder;
-import net.minecraftforge.network.SimpleChannel;
+import net.neoforged.neoforge.network.ChannelBuilder;
+import net.neoforged.neoforge.network.SimpleChannel;
 import net.montoyo.wd.net.client_bound.*;
 import net.montoyo.wd.net.server_bound.*;
 

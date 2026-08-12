@@ -1,0 +1,35 @@
+modLoader="javafml"
+loaderVersion="[2,)"
+license="MIT"
+
+[[mods]]
+modId="webdisplays"
+version="${file.jarVersion}"
+displayName="WebDisplays"
+displayURL="https://github.com/TurkiF1/webdisplays"
+authors="GiantLuigi4, ds58, Mysticpasta1, montoyo, WaterPicker"
+description='''Interactive web browser screens for Minecraft.'''
+
+[[mixins]]
+config="webdisplays.mixins.json"
+
+[[dependencies.webdisplays]]
+modId="neoforge"
+type="required"
+versionRange="[21.11.13-beta,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.webdisplays]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.11,1.21.12)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.webdisplays]]
+modId="mcef"
+type="required"
+versionRange="[2.2.0,)"
+ordering="AFTER"
+side="CLIENT"

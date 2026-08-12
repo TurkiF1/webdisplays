@@ -1,9 +1,9 @@
 package net.montoyo.wd.net;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.network.CustomPayloadEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.montoyo.wd.utilities.DistSafety;
 
 import java.util.ArrayList;

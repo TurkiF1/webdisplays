@@ -18,7 +18,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.utilities.browser.WDBrowser;
@@ -29,7 +29,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.Optional;
 
-import static net.minecraftforge.api.distmarker.Dist.CLIENT;
+import static net.neoforged.api.distmarker.Dist.CLIENT;
 
 @OnlyIn(CLIENT)
 public class GuiMinePad extends WDScreen {

@@ -1,7 +1,7 @@
 package net.montoyo.wd.net;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.SimpleChannel;
+import net.neoforged.neoforge.network.SimpleChannel;
 
 import java.util.function.Function;
 

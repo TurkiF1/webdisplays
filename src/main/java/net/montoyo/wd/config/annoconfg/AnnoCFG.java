@@ -1,10 +1,10 @@
 package net.montoyo.wd.config.annoconfg;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.bus.BusGroup;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.ForgeConfigSpec;
+import net.neoforged.bus.api.BusGroup;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.montoyo.wd.config.annoconfg.annotation.format.*;
 import net.montoyo.wd.config.annoconfg.annotation.value.Default;
 import net.montoyo.wd.config.annoconfg.annotation.value.DoubleRange;

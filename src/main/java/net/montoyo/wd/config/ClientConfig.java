@@ -1,7 +1,7 @@
 package net.montoyo.wd.config;
 
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.config.annoconfg.AnnoCFG;
 import net.montoyo.wd.config.annoconfg.annotation.format.*;

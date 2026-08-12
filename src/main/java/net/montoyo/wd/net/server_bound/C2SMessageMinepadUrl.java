@@ -3,7 +3,7 @@ package net.montoyo.wd.net.server_bound;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.item.ItemMinePad2;
 import net.montoyo.wd.net.Packet;
 

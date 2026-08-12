@@ -5,7 +5,7 @@
 package net.montoyo.wd.net.server_bound;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.event.network.CustomPayloadEvent;
 import net.montoyo.wd.miniserv.server.ClientManager;
 import net.montoyo.wd.miniserv.server.Server;
 import net.montoyo.wd.net.BufferUtils;

@@ -18,14 +18,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.montoyo.wd.utilities.Log;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.stream.IntStream;
 
-import static net.minecraftforge.api.distmarker.Dist.CLIENT;
+import static net.neoforged.api.distmarker.Dist.CLIENT;
 
 @OnlyIn(CLIENT)
 public class RenderRecipe extends Screen {
