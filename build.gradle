@@ -39,7 +39,15 @@ repositories {
     maven fg.forgeMaven
     maven fg.minecraftLibsMaven
     mavenCentral()
-    maven { url = 'https://mcef-download.cinemamod.com/repositories/releases/' }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Modrinth'
+                url = 'https://api.modrinth.com/maven'
+            }
+        }
+        filter { includeGroup 'maven.modrinth' }
+    }
 }
 
 dependencies {
@@ -48,7 +56,7 @@ dependencies {
 
     // Temporary API bridge while MCEF is ported to Forge 1.21.11.
     // This old binary must never be shipped in a release build.
-    compileOnly('com.cinemamod:mcef-forge:2.1.6-1.20.1') { transitive = false }
+    compileOnly('maven.modrinth:TObQ0HxZ:x91l6OKB') { transitive = false }
 }
 
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
