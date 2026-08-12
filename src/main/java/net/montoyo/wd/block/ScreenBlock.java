@@ -216,6 +216,11 @@ public class ScreenBlock extends BaseEntityBlock {
 
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos position, Player player, InteractionHand hand, BlockHitResult hit) {
+        // 1.21.11 calls this even when the hand is empty. Explicitly continue to
+        // useWithoutItem so an empty-hand click can create or control a screen.
+        if (stack.isEmpty())
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
+
         return useLegacy(state, world, position, player, hand, hit);
     }
     
