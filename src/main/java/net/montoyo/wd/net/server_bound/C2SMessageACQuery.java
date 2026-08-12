@@ -43,10 +43,10 @@ public class C2SMessageACQuery extends Packet implements Runnable {
 		NameUUIDPair[] result;
 		
 		if (matchExact)
-			result = Arrays.stream(profiles).filter(gp -> gp.getName().equalsIgnoreCase(beginning)).map(NameUUIDPair::new).toArray(NameUUIDPair[]::new);
+			result = Arrays.stream(profiles).filter(gp -> gp.name().equalsIgnoreCase(beginning)).map(NameUUIDPair::new).toArray(NameUUIDPair[]::new);
 		else {
 			final String lBeg = beginning.toLowerCase();
-			result = Arrays.stream(profiles).filter(gp -> gp.getName().toLowerCase().startsWith(lBeg)).map(NameUUIDPair::new).toArray(NameUUIDPair[]::new);
+			result = Arrays.stream(profiles).filter(gp -> gp.name().toLowerCase().startsWith(lBeg)).map(NameUUIDPair::new).toArray(NameUUIDPair[]::new);
 		}
 		
 		WDNetworkRegistry.INSTANCE.send(new S2CMessageACResult(result), WDNetworkRegistry.player(player));

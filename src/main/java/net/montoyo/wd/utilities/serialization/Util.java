@@ -183,7 +183,7 @@ public abstract class Util {
         Component root = Component.translatable("[WebDisplays] ").
                 setStyle(Style.EMPTY.withColor(color)).
                 append(Component.translatable("webdisplays.message." + key, data));
-        player.sendSystemMessage(root);
+        player.displayClientMessage(root, false);
     }
 
     public static void silentClose(Object obj) {

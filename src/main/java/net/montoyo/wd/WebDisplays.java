@@ -6,7 +6,7 @@ package net.montoyo.wd;
 
 import com.google.gson.Gson;
 import net.minecraft.ChatFormatting;
-import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -104,13 +104,13 @@ public class WebDisplays {
 
     public WebDisplays(IEventBus bus, ModContainer modContainer) {
         INSTANCE = this;
-        if(FMLEnvironment.dist.isClient()) {
+        if(FMLEnvironment.getDist().isClient()) {
             PROXY = DistSafety.createProxy();
         } else {
             PROXY = new SharedProxy();
         }
     
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             // proxies are annoying, so from now on, I'mma be just registering stuff in here
             bus.addListener(ClientProxy::onKeybindRegistry);
             bus.addListener(ClientProxy::onClientSetup);
@@ -157,9 +157,7 @@ public class WebDisplays {
             }
         } */
         
-        if (!FMLEnvironment.production) {
-            ScreenControlRegistry.init();
-        }
+        ScreenControlRegistry.init();
     }
 
     public void onRegisterSounds() {
@@ -179,7 +177,7 @@ public class WebDisplays {
             if (ev.getLevel().isClientSide() || level.dimension() != Level.OVERWORLD)
                 return;
 
-            File worldDir = Objects.requireNonNull(ev.getLevel().getServer()).getServerDirectory();
+            File worldDir = Objects.requireNonNull(ev.getLevel().getServer()).getServerDirectory().toFile();
             File f = new File(worldDir, "wd_next.txt");
 
             if (f.exists()) {
@@ -230,7 +228,7 @@ public class WebDisplays {
         if(ev.getLevel() instanceof Level level) {
             if (ev.getLevel().isClientSide() || level.dimension() != Level.OVERWORLD)
                 return;
-            File f = new File(Objects.requireNonNull(ev.getLevel().getServer()).getServerDirectory(), "wd_next.txt");
+            File f = Objects.requireNonNull(ev.getLevel().getServer()).getServerDirectory().resolve("wd_next.txt").toFile();
 
             try {
                 BufferedWriter bw = new BufferedWriter(new FileWriter(f));
@@ -342,12 +340,12 @@ public class WebDisplays {
         if(server == null)
             return false;
 
-        Advancement adv = server.getAdvancements().getAdvancement(rl);
+        AdvancementHolder adv = server.getAdvancements().get(rl);
         return adv != null && ply.getAdvancements().getOrStartProgress(adv).isDone();
     }
 
     public static int getNextAvailablePadID() {
-        return new WebDisplays().lastPadId++;
+        return INSTANCE.lastPadId++;
     }
 
     public static DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, "webdisplays");

@@ -1,6 +1,7 @@
 package net.montoyo.wd.controls.builtin;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -54,7 +55,7 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 		switch (type) {
 			case UPGRADES -> {
 				adding = buf.readBoolean();
-				toRemove = ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
+				toRemove = readSimpleStack(buf);
 			}
 			case RIGHTS -> {
 				friendRights = buf.readInt();
@@ -69,12 +70,25 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 		switch (type) {
 			case UPGRADES -> {
 				buf.writeBoolean(adding);
-				ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, toRemove);
+				writeSimpleStack(buf, toRemove);
 			}
 			case RIGHTS -> {
 				buf.writeInt(friendRights);
 				buf.writeInt(otherRights);
 			}
+		}
+	}
+
+	private static ItemStack readSimpleStack(FriendlyByteBuf buf) {
+		if (!buf.readBoolean()) return ItemStack.EMPTY;
+		return new ItemStack(BuiltInRegistries.ITEM.get(Identifier.parse(buf.readUtf())), buf.readVarInt());
+	}
+
+	private static void writeSimpleStack(FriendlyByteBuf buf, ItemStack stack) {
+		buf.writeBoolean(!stack.isEmpty());
+		if (!stack.isEmpty()) {
+			buf.writeUtf(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
+			buf.writeVarInt(stack.getCount());
 		}
 	}
 	

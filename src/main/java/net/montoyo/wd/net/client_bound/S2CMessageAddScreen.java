@@ -5,6 +5,8 @@
 package net.montoyo.wd.net.client_bound;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -71,7 +73,7 @@ public class S2CMessageAddScreen extends Packet {
 			
 			int numUpgrades = buf.readByte();
 			for (int j = 0; j < numUpgrades; j++)
-				screens[i].upgrades.add(buf.readItem());
+				screens[i].upgrades.add(readSimpleStack(buf));
 		}
 	}
 	
@@ -91,7 +93,20 @@ public class S2CMessageAddScreen extends Packet {
 			buf.writeByte(scr.upgrades.size());
 			
 			for (ItemStack is : scr.upgrades)
-				buf.writeItem(is);
+				writeSimpleStack(buf, is);
+		}
+	}
+
+	private static ItemStack readSimpleStack(FriendlyByteBuf buf) {
+		if (!buf.readBoolean()) return ItemStack.EMPTY;
+		return new ItemStack(BuiltInRegistries.ITEM.get(Identifier.parse(buf.readUtf())), buf.readVarInt());
+	}
+
+	private static void writeSimpleStack(FriendlyByteBuf buf, ItemStack stack) {
+		buf.writeBoolean(!stack.isEmpty());
+		if (!stack.isEmpty()) {
+			buf.writeUtf(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
+			buf.writeVarInt(stack.getCount());
 		}
 	}
 	
