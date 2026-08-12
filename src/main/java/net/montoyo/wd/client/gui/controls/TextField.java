@@ -7,6 +7,10 @@ package net.montoyo.wd.client.gui.controls;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
 import org.cef.browser.CefBrowserOsr;
@@ -133,7 +137,23 @@ public class TextField extends Control {
     
     @Override
     public boolean keyDown(int key, int scanCode, int modifiers) {
-        return false;
+        if (!enabled || !field.isFocused())
+            return false;
+
+        if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
+            parent.actionPerformed(new EnterPressedEvent(this));
+            return true;
+        }
+
+        if (key == GLFW_KEY_TAB) {
+            parent.actionPerformed(new TabPressedEvent(this));
+            return true;
+        }
+
+        String old = field.getValue();
+        boolean handled = field.keyPressed(new KeyEvent(key, scanCode, modifiers));
+        notifyChanged(old);
+        return handled;
     }
     
     @Override
@@ -143,34 +163,33 @@ public class TextField extends Control {
     
     @Override
     public boolean keyTyped(int keyCode, int modifier) {
-        if(keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER)
-            parent.actionPerformed(new EnterPressedEvent(this));
-        else if(keyCode == GLFW.GLFW_KEY_TAB)
-            parent.actionPerformed(new TabPressedEvent(this));
-        else {
-            String old;
-            if(enabled && field.isFocused())
-                old = field.getValue();
-            else
-                old = null;
-
-            if(enabled && field.isFocused() && !field.getValue().equals(old)) {
-                for(TextChangeListener tcl : listeners)
-                    tcl.onTextChange(this, old, field.getValue());
-
-                parent.actionPerformed(new TextChangedEvent(this, old));
-            }
-            
+        if (!enabled || !field.isFocused())
             return false;
-        }
 
-        return false;
+        String old = field.getValue();
+        boolean handled = field.charTyped(new CharacterEvent(keyCode, modifier));
+        notifyChanged(old);
+        return handled;
     }
     
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        setFocused(true);
-        return true;
+        if (!enabled)
+            return false;
+
+        boolean clicked = field.mouseClicked(
+                new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(mouseButton, 0)), false);
+        setFocused(clicked);
+        return clicked;
+    }
+
+    private void notifyChanged(String old) {
+        if (!field.getValue().equals(old)) {
+            for (TextChangeListener listener : listeners)
+                listener.onTextChange(this, old, field.getValue());
+
+            parent.actionPerformed(new TextChangedEvent(this, old));
+        }
     }
 
     @Override

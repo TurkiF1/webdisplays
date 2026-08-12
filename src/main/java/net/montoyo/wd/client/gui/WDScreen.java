@@ -11,6 +11,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -127,21 +130,23 @@ public abstract class WDScreen extends Screen {
             ctrl.postDraw(poseStack, mouseX, mouseY, ptt);
     }
     
-    public boolean charTyped(char codePoint, int modifiers) {
+    @Override
+    public boolean charTyped(CharacterEvent event) {
         boolean typed = false;
 
         for(Control ctrl: controls)
-            typed = typed || ctrl.keyTyped(codePoint, modifiers);
+            typed = typed || ctrl.keyTyped(event.codepoint(), event.modifiers());
 
-        return typed;
+        return typed || super.charTyped(event);
     }
 
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
         boolean clicked = false;
 
         Control clickedEl = null;
         for(Control ctrl: controls) {
-            clicked = ctrl.mouseClicked(mouseX, mouseY, button);
+            clicked = ctrl.mouseClicked(event.x(), event.y(), event.button());
             if (clicked) {
                 clickedEl = ctrl;
                 break; // don't assume the compiler will optimize stuff
@@ -155,29 +160,32 @@ public abstract class WDScreen extends Screen {
             }
         }
 
-        return clicked;
+        return clicked || super.mouseClicked(event, doubled);
     }
 
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
         boolean mouseReleased = false;
 
         for(Control ctrl: controls)
-            mouseReleased = mouseReleased || ctrl.mouseReleased(mouseX, mouseY, button);
+            mouseReleased = mouseReleased || ctrl.mouseReleased(event.x(), event.y(), event.button());
 
-        return mouseReleased;
+        return mouseReleased || super.mouseReleased(event);
     }
 
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
         boolean dragged = false;
 
         for(Control ctrl: controls)
-            dragged = dragged || ctrl.mouseClickMove(mouseX, mouseY, button, dragX, dragX);
+            dragged = dragged || ctrl.mouseClickMove(event.x(), event.y(), event.button(), dragX, dragY);
 
-        return dragged;
+        return dragged || super.mouseDragged(event, dragX, dragY);
     }
 
     @Override
     protected void init() {
+        super.init();
         CURRENT_SCREEN = this;
 //        minecraft.keyboardHandler.setSendRepeatsToGui(true);
     }
@@ -194,15 +202,17 @@ public abstract class WDScreen extends Screen {
 
 //        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(false);
         CURRENT_SCREEN = null;
+        super.onClose();
     }
 
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         boolean scrolled = false;
 
         for(Control ctrl : controls)
-            scrolled = scrolled || ctrl.mouseScroll(mouseX, mouseY, delta);
+            scrolled = scrolled || ctrl.mouseScroll(mouseX, mouseY, scrollY);
 
-        return scrolled;
+        return scrolled || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     public void mouseMoved(double mouseX, double mouseY) {
@@ -213,26 +223,24 @@ public abstract class WDScreen extends Screen {
 
     }
 
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    @Override
+    public boolean keyPressed(KeyEvent event) {
         boolean down = false;
 
         for (Control ctrl : controls)
-            down = down || ctrl.keyDown(keyCode, scanCode, modifiers);
+            down = down || ctrl.keyDown(event.key(), event.scancode(), event.modifiers());
 
-        if (this instanceof GuiKeyboard) {
-            return down;
-        } else {
-            return new GuiServer(new Vector3i(), new NameUUIDPair()).keyPressed(keyCode, scanCode, modifiers);
-        }
+        return down || super.keyPressed(event);
     }
 
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+    @Override
+    public boolean keyReleased(KeyEvent event) {
         boolean up = false;
 
         for(Control ctrl : controls)
-            up = up || ctrl.keyUp(keyCode, scanCode, modifiers);
+            up = up || ctrl.keyUp(event.key(), event.scancode(), event.modifiers());
 
-        return up;
+        return up || super.keyReleased(event);
     }
 
     public Object actionPerformed(Event ev) {

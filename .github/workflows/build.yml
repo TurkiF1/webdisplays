@@ -39,6 +39,10 @@ jobs:
           grep -Fq 'level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS)' src/main/java/net/montoyo/wd/entity/ScreenBlockEntity.java
           grep -Fq 'collector.submitCustomGeometry' src/main/java/net/montoyo/wd/client/renderers/ScreenRenderer.java
           grep -Fq 'browser.getTextureIdentifier()' src/main/java/net/montoyo/wd/client/renderers/ScreenRenderer.java
+          grep -Fq 'field.charTyped(new CharacterEvent' src/main/java/net/montoyo/wd/client/gui/controls/TextField.java
+          grep -Fq 'boolean clicked = field.mouseClicked' src/main/java/net/montoyo/wd/client/gui/controls/TextField.java
+          ! grep -Fq 'new GuiServer(new Vector3i(), new NameUUIDPair()).keyPressed' src/main/java/net/montoyo/wd/client/gui/WDScreen.java
+          grep -Fq 'mouseClicked(MouseButtonEvent event, boolean doubled)' src/main/java/net/montoyo/wd/client/gui/WDScreen.java
       - name: Smoke-test NeoForge server startup
         run: |
           mkdir -p run-server
