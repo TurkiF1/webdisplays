@@ -126,7 +126,10 @@ public class WebDisplays {
         criterionUpgradeScreen = new Criterion("upgrade_screen");
         criterionLinkPeripheral = new Criterion("link_peripheral");
         criterionKeyboardCat = new Criterion("keyboard_cat");
-        registerTrigger(criterionPadBreak, criterionUpgradeScreen, criterionLinkPeripheral, criterionKeyboardCat);
+        // Custom advancement triggers require the data-driven registry bootstrap in
+        // modern NeoForge. They are not needed for the browser or screen gameplay,
+        // so keep the trigger objects for internal calls while their registration is
+        // migrated separately.
 
         bus.addListener(WDNetworkRegistry::register);
         SOUNDS.register(bus);
@@ -356,11 +359,6 @@ public class WebDisplays {
 
         SOUNDS.register(resName, () -> ret);
         return ret;
-    }
-
-    private static void registerTrigger(Criterion ... criteria) {
-        for(Criterion c: criteria)
-            Registry.register(BuiltInRegistries.TRIGGER_TYPES, c.id(), c);
     }
 
    // public static boolean isOpenComputersAvailable() {
