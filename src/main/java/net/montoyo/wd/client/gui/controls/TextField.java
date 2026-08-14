@@ -177,10 +177,16 @@ public class TextField extends Control {
         if (!enabled)
             return false;
 
-        boolean clicked = field.mouseClicked(
-                new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(mouseButton, 0)), false);
-        setFocused(clicked);
-        return clicked;
+        // The legacy control owns its whole rectangle. EditBox.mouseClicked()
+        // can reject the event after the 1.21.11 coordinate migration, which
+        // leaves the URL field unfocused and sends typing to another control.
+        field.setFocused(true);
+        field.setCursorPosition(field.getValue().length());
+        // Keep the caret at the end without selecting the value. Selecting it
+        // makes Minecraft draw a white selection rectangle behind our white
+        // fallback text, so the URL looks blank even though it is present.
+        field.setHighlightPos(field.getValue().length());
+        return true;
     }
 
     private void notifyChanged(String old) {
